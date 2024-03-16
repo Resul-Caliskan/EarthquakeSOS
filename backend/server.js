@@ -10,6 +10,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const coordinateRoutes = require("./src/routes/coordinateRoutes");
 const earthquakeRoutes = require("./src/routes/earthquakeRoutes");
 const { connectedClients } = require("./src/config/connectedClients");
+const User = require("./src/models/user");
 
 const app = express();
 const server = http.createServer(app);
@@ -26,6 +27,17 @@ mongoose
 io.on("connection", (socket) => {
   console.log(`İstemci bağlandı: ${socket.id}`);
   connectedClients.add(socket);
+
+  //Kullanıcı konumlarını güncelleme
+  socket.on("updateLocation", async ({ id, username, location }) => {
+    console.log(
+      `Kullanıcı ${username} için konum güncellemesi alındı:`,
+      location
+    );
+
+    // MongoDB'de kullanıcıyı güncelle
+    await User.findByIdAndUpdate(id, { location }, { upsert: true });
+  });
 
   socket.on("disconnect", () => {
     console.log(`İstemci bağlantısı kesildi: ${socket.id}`);

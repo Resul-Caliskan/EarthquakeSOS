@@ -5,7 +5,7 @@ const cors = require("cors");
 const config = require("./src/config/config");
 // ROUTES
 const authRoutes = require("./src/routes/authRoutes");
-
+const coordinateRoutes = require("./src/routes/coordinateRoutes");
 const app = express();
 
 app.use(bodyParser.json());
@@ -17,6 +17,7 @@ mongoose
   .catch((err) => console.log("Mongo Bağlantı hatasi:", err));
 
 app.use("/api", authRoutes);
+app.use("/api", coordinateRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

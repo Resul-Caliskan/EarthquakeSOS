@@ -9,6 +9,8 @@ const http = require("http");
 const authRoutes = require("./src/routes/authRoutes");
 const coordinateRoutes = require("./src/routes/coordinateRoutes");
 const earthquakeRoutes = require("./src/routes/earthquakeRoutes");
+const userRoutes = require("./src/routes/userRoutes");
+
 const { connectedClients } = require("./src/config/connectedClients");
 const User = require("./src/models/user");
 
@@ -49,6 +51,7 @@ io.on("connection", (socket) => {
 app.use("/api", authRoutes);
 app.use("/api", coordinateRoutes);
 app.use("/api", earthquakeRoutes);
+app.use("/api", userRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

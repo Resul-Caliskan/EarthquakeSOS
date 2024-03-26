@@ -13,32 +13,55 @@ import { Colors } from "../../constants/colors";
 // import "firebase/compat/auth";
 // import "firebase/compat/database";
 // import firebaseConfig from "../../backEnd/firebaseFunctions/firebaseConfig";
+import BackButton from "../../components/goBackButton";
+
 // firebase.initializeApp(firebaseConfig);
 
-const LoginScreen = ({ navigation }) => {
+const RegisterScreen = ({ navigation }) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // Yeni eklendi
 
-  const handleLogin = async () => {
-    navigation.replace("home");
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+  const isPasswordValid = (password) => {
+    return password.length >= 6;
+  };
+
+  const handleRegister = async () => {
+    if (!isValidEmail(email)) {
+      alert("Geçerli bir e-posta adresi giriniz.");
+      return;
+    }
+
+    if (!isPasswordValid(password)) {
+      alert("Şifre en az 6 karakter uzunluğunda olmalıdır.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Şifreler eşleşmiyor. Lütfen tekrar kontrol edin.");
+      return;
+    }
     // try {
     //   const userCredential = await firebase
     //     .auth()
-    //     .signInWithEmailAndPassword(email, password)
-    //     .then(() => {
-    //       navigation.replace("Home", { email: email });
-    //     });
+    //     .createUserWithEmailAndPassword(email, password);
 
-    //   // Kullanıcı girişi başarılıysa, kullanıcı ana sayfaya yönlendirilir.
+    //   // Kullanıcı bilgilerini Firestore'a kaydet
+    //   await firebase.firestore().collection("users").doc(email).set({
+    //     name,
+    //     score,
+    //     weeklyStats,
+    //   });
+
+    //   console.log("Kullanıcı başarıyla oluşturuldu:", userCredential.user.uid);
+    //   navigation.replace("Home", { email: email });
     // } catch (error) {
-    //   console.error("Kullanıcı girişi hatası:", error.message);
-    //   setYanlis("Yanlış Tekrardan Gir");
-    //   setEmail("");
-    //   setPassword("");
+    //   console.error("Kullanıcı oluşturma hatası:", error.message);
     // }
-  };
-  const handleRegisterButton = () => {
-    navigation.navigate("register");
   };
   return (
     <KeyboardAvoidingView
@@ -47,22 +70,7 @@ const LoginScreen = ({ navigation }) => {
     >
       <View style={styles.outContianer}>
         <View style={styles.topView}>
-          <View
-            style={{
-              width: 100,
-              height: 100,
-              backgroundColor: Colors.white,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{ fontSize: 50, fontStyle: "italic", letterSpacing: 10 }}
-            >
-              ES
-            </Text>
-          </View>
+          <BackButton navigation={navigation} />
         </View>
         <View style={styles.botttomView}>
           <View
@@ -77,25 +85,28 @@ const LoginScreen = ({ navigation }) => {
             <Text
               style={[
                 styles.text,
-                { fontSize: 40, fontWeight: "bold", letterSpacing: 2 },
+                { fontSize: 35, fontWeight: "bold", letterSpacing: 2 },
               ]}
             >
-              ESOS
-            </Text>
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontSize: 12,
-                  fontWeight: "600",
-
-                  marginTop: 5,
-                },
-              ]}
-            >
-              Devam Etmek İçin Giriş Yapın
+              Hesap Oluştur
             </Text>
           </View>
+          <View
+            style={{
+              width: "60%",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Text style={[styles.text]}>İsim</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => setName(text)}
+            value={name}
+            placeholder="İsminizi giriniz"
+            placeholderTextColor="#8F8E8E"
+          />
           <View
             style={{
               width: "60%",
@@ -130,59 +141,38 @@ const LoginScreen = ({ navigation }) => {
             placeholderTextColor="#8F8E8E"
             secureTextEntry
           />
+          <View
+            style={{
+              width: "60%",
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Text style={[styles.text]}>Şifre Tekrarı</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+            placeholder="Şifreyi tekrar giriniz"
+            placeholderTextColor="#8F8E8E"
+            secureTextEntry
+          />
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              handleLogin();
+              handleRegister();
             }}
           >
-            <Text style={styles.text}>Giriş</Text>
+            <Text style={styles.text}>Kayıt Ol</Text>
           </TouchableOpacity>
-          <View
-            style={{
-              width: "100%",
-              marginTop: 20,
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                // Burada giriş işlemi için bir fonksiyon çağırabilirsiniz
-              }}
-            >
-              <Text
-                style={[
-                  styles.text,
-                  { borderBottomWidth: 1, borderColor: Colors.white },
-                ]}
-              >
-                Şifremi Unuttum
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                handleRegisterButton();
-              }}
-            >
-              <Text
-                style={[
-                  styles.text,
-                  { borderBottomWidth: 1, borderColor: Colors.white },
-                ]}
-              >
-                Kayıt Ol
-              </Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -193,15 +183,17 @@ const styles = StyleSheet.create({
   topView: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
+    marginLeft: 20,
+    marginTop: 10,
   },
   botttomView: {
-    flex: 2,
+    flex: 6,
     width: "100%",
     backgroundColor: "#4D4C4C",
-    borderTopRightRadius: 80,
-    borderTopWidth: 2,
-    borderEndWidth: 2,
+    borderTopLeftRadius: 80,
+    borderTopWidth: 3,
+    borderStartWidth: 1,
     borderColor: Colors.white,
     alignItems: "center",
     justifyContent: "flex-start",
@@ -228,5 +220,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#1C2120",
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: Colors.limeGreen,
+    position: "absolute",
+    left: 15,
+    top: 40,
+    borderRadius: 15,
   },
 });

@@ -3,6 +3,7 @@ export const Colors = {
     white: "#ffffff",
     honeydew: "honeydew",
     anaEkranYazi:"#011627",
+    red:"#FF0606",
     black: "#000000",
     backgroundColor: "#011627",
     turuncu: "#FF8C00",

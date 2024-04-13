@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
   View,
+  Image,
   TextInput,
+  Button,
   TouchableOpacity,
+  ImageBackground,
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
@@ -13,11 +17,14 @@ import { Colors } from "../../constants/colors";
 // import "firebase/compat/auth";
 // import "firebase/compat/database";
 // import firebaseConfig from "../../backEnd/firebaseFunctions/firebaseConfig";
+
 // firebase.initializeApp(firebaseConfig);
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [yanlis, setYanlis] = useState("");
+  const [admin, setAdmin] = useState(0);
 
   const handleLogin = async () => {
     navigation.replace("home");
@@ -45,139 +52,164 @@ const LoginScreen = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.keyboardView}
     >
-      <View style={styles.outContianer}>
-        <View style={styles.topView}>
-          <View
-            style={{
-              width: 100,
-              height: 100,
-              backgroundColor: Colors.white,
-              borderRadius: 20,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{ fontSize: 50, fontStyle: "italic", letterSpacing: 10 }}
+      <ImageBackground
+        source={require("../../../assets/login.png")}
+        style={styles.container}
+      >
+        <View style={styles.outContianer}>
+          <View style={styles.topView}>
+            <View
+              style={{
+                width: 100,
+                height: 100,
+                backgroundColor: Colors.red,
+                borderWidth: 3,
+                borderColor: Colors.black,
+                borderRadius: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              ES
-            </Text>
+              <Text
+                style={{
+                  color: Colors.white,
+                  fontSize: 50,
+                  fontStyle: "italic",
+                  letterSpacing: 10,
+                }}
+              >
+                A
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.botttomView}>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              marginTop: 20,
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={[
-                styles.text,
-                { fontSize: 40, fontWeight: "bold", letterSpacing: 2 },
-              ]}
+          <View style={styles.botttomView}>
+            {/* <Image
+              source={require("../../../assets/hi.gif")}
+              style={{
+                width: 60,
+                height: 100,
+                margin: 20,
+                borderWidth: 5,
+                borderColor: Colors.white,
+                position: "absolute",
+                left: 0,
+                top: 0,
+              }}
+            /> */}
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+                marginTop: 20,
+                marginBottom: 10,
+              }}
             >
-              ESOS
-            </Text>
-            <Text
-              style={[
-                styles.text,
-                {
-                  fontSize: 12,
-                  fontWeight: "600",
+              <Text
+                style={[
+                  styles.text,
+                  { fontSize: 40, fontWeight: "bold", letterSpacing: 2 },
+                ]}
+              >
+                AFET
+              </Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    fontSize: 12,
+                    fontWeight: "600",
 
-                  marginTop: 5,
-                },
-              ]}
-            >
-              Devam Etmek İçin Giriş Yapın
-            </Text>
-          </View>
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>Email</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            placeholder="Email adresi giriniz"
-            placeholderTextColor="#8F8E8E"
-            keyboardType="email-address"
-          />
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>Şifre</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            placeholder="Şifre giriniz"
-            placeholderTextColor="#8F8E8E"
-            secureTextEntry
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              handleLogin();
-            }}
-          >
-            <Text style={styles.text}>Giriş</Text>
-          </TouchableOpacity>
-          <View
-            style={{
-              width: "100%",
-              marginTop: 20,
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                // Burada giriş işlemi için bir fonksiyon çağırabilirsiniz
-              }}
-            >
-              <Text
-                style={[
-                  styles.text,
-                  { borderBottomWidth: 1, borderColor: Colors.white },
+                    marginTop: 5,
+                  },
                 ]}
               >
-                Şifremi Unuttum
+                Devam Etmek İçin Giriş Yapın
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                handleRegisterButton();
+            </View>
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
               }}
             >
-              <Text
-                style={[
-                  styles.text,
-                  { borderBottomWidth: 1, borderColor: Colors.white },
-                ]}
-              >
-                Kayıt Ol
-              </Text>
+              <Text style={[styles.text]}>Email</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              placeholder="Email adresi giriniz..."
+              placeholderTextColor="#E4E1E1"
+              keyboardType="email-address"
+            />
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={[styles.text]}>Şifre</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholder="Şifre giriniz..."
+              placeholderTextColor="#E4E1E1"
+              secureTextEntry
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                handleLogin();
+              }}
+            >
+              <Text style={styles.text}>Giriş</Text>
             </TouchableOpacity>
+            <View
+              style={{
+                width: "100%",
+                marginTop: 20,
+                flexDirection: "row",
+                justifyContent: "space-around",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  // Burada giriş işlemi için bir fonksiyon çağırabilirsiniz
+                }}
+              >
+                <Text
+                  style={[
+                    styles.text,
+                    { borderBottomWidth: 1, borderColor: Colors.white },
+                  ]}
+                >
+                  Şifremi Unuttum
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  handleRegisterButton();
+                }}
+              >
+                <Text
+                  style={[
+                    styles.text,
+                    { borderBottomWidth: 1, borderColor: Colors.white },
+                  ]}
+                >
+                  Kayıt Ol
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 };
@@ -186,7 +218,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "50%",
+    height: "35%",
   },
   keyboardView: { flex: 1 },
   outContianer: { flex: 1, width: "100%" },
@@ -198,11 +230,11 @@ const styles = StyleSheet.create({
   botttomView: {
     flex: 2,
     width: "100%",
-    backgroundColor: "#4D4C4C",
+    backgroundColor: Colors.red,
     borderTopRightRadius: 80,
-    borderTopWidth: 2,
-    borderEndWidth: 2,
-    borderColor: Colors.white,
+    borderTopWidth: 3,
+    borderEndWidth: 3,
+    borderColor: Colors.black,
     alignItems: "center",
     justifyContent: "flex-start",
   },

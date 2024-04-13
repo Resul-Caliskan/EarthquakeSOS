@@ -3,8 +3,11 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TextInput,
+  Button,
   TouchableOpacity,
+  ImageBackground,
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
@@ -22,6 +25,8 @@ const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // Yeni eklendi
+  const [score, setScore] = useState(0);
+  const [weeklyStats, setWeeklyStats] = useState([0, 0, 0, 0, 0, 0, 0]);
 
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -68,106 +73,124 @@ const RegisterScreen = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.keyboardView}
     >
-      <View style={styles.outContianer}>
-        <View style={styles.topView}>
-          <BackButton navigation={navigation} />
-        </View>
-        <View style={styles.botttomView}>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-              marginTop: 20,
-              marginBottom: 10,
-            }}
-          >
-            <Text
-              style={[
-                styles.text,
-                { fontSize: 35, fontWeight: "bold", letterSpacing: 2 },
-              ]}
+      <ImageBackground
+        source={require("../../../assets/login.png")}
+        style={styles.container}
+      >
+        <View style={styles.outContianer}>
+          <View style={styles.topView}>
+            <BackButton navigation={navigation} />
+          </View>
+          <View style={styles.botttomView}>
+            {/* <Image
+              source={require("../../../assets/hi.gif")}
+              style={{
+                width: 30,
+                height: 50,
+                margin: 20,
+                borderWidth: 5,
+                borderColor: Colors.white,
+                position: "absolute",
+                left: 10,
+                top: 10,
+              }}
+            /> */}
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+                marginTop: 20,
+                marginBottom: 10,
+              }}
             >
-              Hesap Oluştur
-            </Text>
+              <Text
+                style={[
+                  styles.text,
+                  { fontSize: 35, fontWeight: "bold", letterSpacing: 2 },
+                ]}
+              >
+                Hesap Oluştur
+              </Text>
+            </View>
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={[styles.text]}>İsim</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setName(text)}
+              value={name}
+              placeholder="İsminizi giriniz..."
+              placeholderTextColor="#E4E1E1"
+            />
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={[styles.text]}>Email</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              placeholder="Email adresi giriniz..."
+              placeholderTextColor="#E4E1E1"
+              keyboardType="email-address"
+            />
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={[styles.text]}>Şifre</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholder="Şifre giriniz..."
+              placeholderTextColor="#E4E1E1"
+              secureTextEntry
+            />
+            <View
+              style={{
+                width: "60%",
+                alignItems: "flex-start",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={[styles.text]}>Şifre Tekrarı</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setConfirmPassword(text)}
+              value={confirmPassword}
+              placeholder="Şifreyi tekrar giriniz..."
+              placeholderTextColor="#E4E1E1"
+              secureTextEntry
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                handleRegister();
+              }}
+            >
+              <Text style={styles.text}>Kayıt Ol</Text>
+            </TouchableOpacity>
           </View>
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>İsim</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setName(text)}
-            value={name}
-            placeholder="İsminizi giriniz"
-            placeholderTextColor="#8F8E8E"
-          />
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>Email</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setEmail(text)}
-            value={email}
-            placeholder="Email adresi giriniz"
-            placeholderTextColor="#8F8E8E"
-            keyboardType="email-address"
-          />
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>Şifre</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            placeholder="Şifre giriniz"
-            placeholderTextColor="#8F8E8E"
-            secureTextEntry
-          />
-          <View
-            style={{
-              width: "60%",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Text style={[styles.text]}>Şifre Tekrarı</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setConfirmPassword(text)}
-            value={confirmPassword}
-            placeholder="Şifreyi tekrar giriniz"
-            placeholderTextColor="#8F8E8E"
-            secureTextEntry
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              handleRegister();
-            }}
-          >
-            <Text style={styles.text}>Kayıt Ol</Text>
-          </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 };
@@ -176,7 +199,7 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "50%",
+    height: "20%",
   },
   keyboardView: { flex: 1 },
   outContianer: { flex: 1, width: "100%" },
@@ -190,11 +213,11 @@ const styles = StyleSheet.create({
   botttomView: {
     flex: 6,
     width: "100%",
-    backgroundColor: "#4D4C4C",
+    backgroundColor: Colors.red,
     borderTopLeftRadius: 80,
     borderTopWidth: 3,
-    borderStartWidth: 1,
-    borderColor: Colors.white,
+    borderStartWidth: 3,
+    borderColor: Colors.black,
     alignItems: "center",
     justifyContent: "flex-start",
   },

@@ -11,6 +11,8 @@ import {
 import React, { useState } from "react";
 import MapView, { Marker } from "react-native-maps"; // Harita bileşeni
 import { Colors } from "../../constants/colors";
+import axios from "axios";
+
 export default function Home() {
   const [userLocation, setUserLocation] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,6 +25,13 @@ export default function Home() {
 
   const handleSafeButtonClick = () => {
     setConfirmModalVisible(true);
+  };
+  const handleEmergcy = () => {
+    //Konum al
+    const response = axios.post("apiurl/coordinate/send-my-coordinate", {
+      coordinate: "",
+      id: "",
+    });
   };
 
   const handleConfirmation = (confirmed) => {
@@ -84,7 +93,7 @@ export default function Home() {
             <Text style={styles.text}>Güvendeyim</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.buton2}>
+        <TouchableOpacity style={styles.buton2} onPress={handleEmergcy}>
           <Text style={[styles.text, { fontSize: 18, textAlign: "center" }]}>
             ACİL YARDIM
           </Text>

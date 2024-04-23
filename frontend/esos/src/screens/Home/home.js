@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Modal, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { Alert, Platform, Vibration } from 'react-native';
 import MapComponent from "./components/MapComponent";
 import EmergencyButton from "./components/EmergencyButton";
 import NearbyPeopleModal from "./components/NearbyPeopleModal";
+import io from 'socket.io-client';
+import { handleFCMNotifications, registerAppWithFCM } from "../../utils/pushNotifications";
+import { establishWebSocketConnection } from "../../utils/webSocket";
 
 const Home = () => {
   const [userLocation, setUserLocation] = useState(null);
@@ -12,6 +16,19 @@ const Home = () => {
     { name: "Ayşe", status: "Güvende Değil" },
     { name: "Mehmet", status: "Bilinmiyor" },
   ]);
+
+  useEffect(() => {
+    registerAppWithFCM();
+
+
+    handleFCMNotifications((notification) => {
+      Alert.alert('Earthquake Alert', notification.body);
+    });
+    establishWebSocketConnection();
+
+    return () => {
+    };
+  }, []);
 
   return (
     <View style={styles.container}>

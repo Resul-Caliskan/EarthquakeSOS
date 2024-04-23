@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { Colors } from "../../constants/colors";
+import requestLocationPermission from "../../permissions/locationPermission";
 // import firebase from "firebase/compat/app";
 // import "firebase/compat/auth";
 // import "firebase/compat/database";
@@ -25,7 +26,9 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [yanlis, setYanlis] = useState("");
   const [admin, setAdmin] = useState(0);
-
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
   const handleLogin = async () => {
     navigation.replace("home");
     // try {

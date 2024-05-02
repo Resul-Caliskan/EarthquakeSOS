@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
-import { Colors } from "../../constants/colors";
+import { Colors } from "../../../constants/colors";
 
 const NearbyPeopleModal = ({ modalVisible, nearbyPeople, onClose }) => {
   return (
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
   },
   modalHeader: {
     flexDirection: "row",
@@ -62,12 +62,14 @@ const styles = StyleSheet.create({
     color: Colors.blue,
   },
   personStatus: {
+    flex:1,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
   },
   personName: {
     marginRight: 10,
+    color:Colors.white
   },
   personStatusText: {
     fontSize: 16,

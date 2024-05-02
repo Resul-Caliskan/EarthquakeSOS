@@ -1,5 +1,5 @@
 import { PermissionsAndroid, Platform } from "react-native";
-import { PERMISSIONS, request } from "@react-native-community/permissions";
+import { PERMISSIONS, request } from "react-native-permissions";
 
 const requestLocationPermission = async () => {
   if (Platform.OS === "android") {

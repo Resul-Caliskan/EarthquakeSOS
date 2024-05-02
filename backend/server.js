@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const { connectedClients } = require('./src/config/connectedClients');
 const config = require('./src/config/config');
-const earthquakeController = require('./src/controllers/earthquakeController');
+const earthquakeController = require('./src/controllers/earthquakeAlertController');
+const coordinateRoutes = require('./src/routes/coordinateRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +36,7 @@ io.on('connection', (socket) => {
 
 // Endpoint to handle earthquakes
 app.post('/api/earthquake', earthquakeController.handleEarthquake);
+app.post("/api",coordinateRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

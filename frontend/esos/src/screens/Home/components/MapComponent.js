@@ -7,12 +7,19 @@ const MapComponent = ({ userLocation }) => {
     <View style={styles.container}>
       <MapView
         style={{ flex: 1 }}
-        initialRegion={{
-          latitude: 41.0082,
-          longitude: 28.9784,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
+        initialRegion={
+          userLocation
+            ? {
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+              }
+            : {
+                latitude: 41.0082,
+                longitude: 28.9784,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }
+        }
       >
         <Marker
           coordinate={{ latitude: 41.0082, longitude: 28.9784 }}

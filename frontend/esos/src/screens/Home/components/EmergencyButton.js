@@ -1,35 +1,36 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import axios from "axios";
-import Geolocation from "@react-native-community/geolocation";
+import { Colors } from "../../../constants/colors";
+// import Geolocation from "@react-native-community/geolocation";
 
 const apiUrl = process.env.API_URL;
 
 const EmergencyButton = () => {
   const handleEmergency = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const coordinate = `${latitude},${longitude}`;
+    // Geolocation.getCurrentPosition(
+    //   (position) => {
+    //     const { latitude, longitude } = position.coords;
+    //     const coordinate = `${latitude},${longitude}`;
 
-        axios
-          .post(`${apiUrl}/emergency`, {
-            coordinate,
-            id: "",
-          })
-          .then((response) => {
-            // Handle response as needed
-          })
-          .catch((error) => {
-            // Handle error
-          });
-      },
-      (error) => {
-        console.error(error);
-        // Handle error
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+    //     axios
+    //       .post(`${apiUrl}/emergency`, {
+    //         coordinate,
+    //         id: "",
+    //       })
+    //       .then((response) => {
+    //         // Handle response as needed
+    //       })
+    //       .catch((error) => {
+    //         // Handle error
+    //       });
+    //   },
+    //   (error) => {
+    //     console.error(error);
+    //     // Handle error
+    //   },
+    //   { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    // );
   };
 
   return (
@@ -41,11 +42,15 @@ const EmergencyButton = () => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "red",
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 20,
-    width: "100%",
+    backgroundColor: Colors.red,
+    width: 90,
+    height: 90,
+    borderWidth: 2,
+    borderColor: Colors.white,
+    marginBottom: 10,
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonText: {
     color: "white",

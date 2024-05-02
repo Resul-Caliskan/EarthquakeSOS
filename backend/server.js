@@ -7,7 +7,8 @@ const cors = require('cors');
 const { connectedClients } = require('./src/config/connectedClients');
 const config = require('./src/config/config');
 const earthquakeController = require('./src/controllers/earthquakeAlertController');
-const coordinateRoutes = require('./src/routes/coordinateRoutes');
+const CoordinateRoutes = require('./src/routes/coordinateRoutes');
+const AuthRoutes= require("./src/routes/authRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -35,8 +36,9 @@ io.on('connection', (socket) => {
 });
 
 // Endpoint to handle earthquakes
-app.post('/api/earthquake', earthquakeController.handleEarthquake);
-app.post("/api",coordinateRoutes);
+app.use('/api/earthquake', earthquakeController.handleEarthquake);
+app.use("/api",CoordinateRoutes);
+app.use("/api",AuthRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

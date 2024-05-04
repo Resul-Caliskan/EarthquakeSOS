@@ -1,6 +1,5 @@
 // src/backgroundTasks/socketBackgroundTask.js
 import { TaskManager } from "expo";
-import io from "socket.io-client";
 import { sendPushNotification } from "../utilities/pushNotifications";
 import notificationsConfig from "../config/notificationsConfig";
 

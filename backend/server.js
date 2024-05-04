@@ -6,7 +6,7 @@ const cors = require("cors");
 const config = require("./src/config/config");
 const CoordinateRoutes = require("./src/routes/coordinateRoutes");
 const AuthRoutes = require("./src/routes/authRoutes");
-const socketConfig = require("./config/socketConfig");
+const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 
 const app = express();

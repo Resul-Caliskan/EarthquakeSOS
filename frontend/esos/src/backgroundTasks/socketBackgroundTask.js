@@ -6,6 +6,9 @@ import notificationsConfig from "../config/notificationsConfig";
 const BACKGROUND_SOCKET_TASK = "BACKGROUND_SOCKET_TASK";
 
 TaskManager.defineTask(BACKGROUND_SOCKET_TASK, async ({ data, error }) => {
+  notificationsConfig.on("notification", (response) => {
+    console.log("Gelen Data:", response);
+  });
   if (error) {
     console.error("Socket background task error:", error);
     return;

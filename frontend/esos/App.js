@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import socketBackgroundTask from "./src/backgroundTasks/socketBackgroundTask";
-import NavigationScreen from "./src/navigations/navigation";
+import NavigationScreen from "./src/navigaitons/navigation";
 
 export default function App() {
   useEffect(() => {

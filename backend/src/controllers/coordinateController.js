@@ -4,12 +4,13 @@ const { userCache } = require("../config/userCache");
 
 async function updateCoordinate(req, res) {
   const { coordinate, id } = req.body;
+  console.log("Cordinate",coordinate);
   try {
     const updateCoordinateUser = await User.findByIdAndUpdate(id, {
       coordinate: coordinate,
     });
 
-    res.status(200).json({ message: "Koordinat Başarılı Bir Şekilde Alındı" });
+    res.status(200).json({ message: "Koordinat Başarılı Bir Şekilde Alındı" , data :updateCoordinateUser});
   } catch (error) {
     res.status(500).json({
       message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",

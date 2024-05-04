@@ -5,24 +5,32 @@ import {
   StatusBar,
   Touchable,
   TouchableOpacity,
+  TextInput,
   Modal,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Colors } from "../../constants/colors";
 import axios from "axios";
 import MapComponent from "./components/MapComponent";
 import getLocation from "../../utils/getLocation";
+import { FontAwesome } from "@expo/vector-icons";
+import EmergencyModal from "./components/modalEmergency";
 
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [emergencyModal, setEmergencyModal] = useState(false);
   const [location, setLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },
     { name: "Ayşe", status: "Güvende Değil" },
     { name: "Mehmet", status: "Bilinmiyor" },
   ]);
+  const [emergencyMessage, setEmergencyMessage] = useState("Acil Yardım");
+  const [audioRecorded, setAudioRecorded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,10 +52,24 @@ export default function Home() {
   const handleEmergcy = async () => {
     const { latitude, longitude } = await getLocation();
     setLocation({ latitude, longitude });
-    const response = await axios.put(
-      `https://earthquakesos.onrender.com/api/coordinate/send-my-coordinate`,
-      { id: "65f58ecc2be8a84b7704c5ed", coordinate: [latitude, longitude] }
-    );
+    try {
+      const response = await axios.put(
+        `https://earthquakesos.onrender.com/api/coordinate/send-my-coordinate`,
+        {
+          id: "65f58ecc2be8a84b7704c5ed",
+          coordinate: [latitude, longitude],
+          // message: emergencyMessage,
+          // audioRecorded: audioRecorded,
+        }
+      );
+      console.log("Cevap" + response.data.data);
+      if (response.status === 200) {
+        setLoading(false);
+        setEmergencyModal(false);
+      }
+    } catch (error) {
+      console.error("Hata: " + error);
+    }
   };
 
   const handleConfirmation = (confirmed) => {
@@ -87,12 +109,22 @@ export default function Home() {
             <Text style={styles.text}>Güvendeyim</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.buton2} onPress={handleEmergcy}>
+        <TouchableOpacity
+          style={styles.buton2}
+          onPress={() => setEmergencyModal(true)}
+        >
           <Text style={[styles.text, { fontSize: 18, textAlign: "center" }]}>
             ACİL YARDIM
           </Text>
         </TouchableOpacity>
       </View>
+      <EmergencyModal
+        visible={emergencyModal}
+        closeModal={() => setEmergencyModal(false)}
+        handleEmergency={() => handleEmergcy()}
+        loading={loading}
+        setTrue={() => setLoading(true)}
+      />
       <Modal
         animationType="slide"
         transparent={true}
@@ -136,13 +168,18 @@ export default function Home() {
             Güvende Olduğunuza Emin Misiniz?
           </Text>
           <View style={styles.confirmationButtons}>
-            <TouchableOpacity onPress={() => handleConfirmation(true)}>
+            <TouchableOpacity
+              onPress={() => {
+                handleConfirmation(true);
+              }}
+            >
               <Text
                 style={[styles.confirmationButton, { color: Colors.limeGreen }]}
               >
                 Evet
               </Text>
             </TouchableOpacity>
+
             <TouchableOpacity onPress={() => handleConfirmation(false)}>
               <Text style={[styles.confirmationButton, { color: Colors.red }]}>
                 Hayır

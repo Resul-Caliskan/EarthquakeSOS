@@ -54,7 +54,7 @@ export default function Home() {
     setLocation({ latitude, longitude });
     try {
       const response = await axios.put(
-        `https://earthquakesos.onrender.com/api/coordinate/send-my-coordinate`,
+        `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
         {
           id: "65f58ecc2be8a84b7704c5ed",
           coordinate: [latitude, longitude],

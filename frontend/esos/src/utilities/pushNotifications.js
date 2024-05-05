@@ -1,26 +1,28 @@
-// src/utilities/pushNotifications.js
-import { Notifications } from "expo";
-import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
+import { Audio } from "expo-av";
 
-export const sendPushNotification = async (data) => {
-  const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
-  let finalStatus = existingStatus;
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
-  if (existingStatus !== "granted") {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    finalStatus = status;
+export async function scheduleNotification(data) {
+  const alarmSound = new Audio.Sound();
+  try {
+    await alarmSound.loadAsync(require("../../assets/alarm.mp3"));
+    await alarmSound.playAsync();
+  } catch (error) {
+    console.error("Alarm çalma hatası:", error);
   }
-
-  if (finalStatus !== "granted") {
-    console.error("Permission to send push notification was not granted");
-    return;
-  }
-
-  await Notifications.presentLocalNotificationAsync({
-    title: "Notification",
-    body: data.message,
-    // You can customize other notification options here
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `Deprem`,
+      body: "Deprem Büyüklüğü:" + data,
+      color: "red",
+    },
+    trigger: null,
   });
-};
+}

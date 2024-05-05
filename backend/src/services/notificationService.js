@@ -5,4 +5,5 @@ const socketConfig = require('../config/notificationConfig');
 exports.sendNotification = (message) => {
     const io = socketConfig.getSocketIo();
     io.emit('notification', { message });
+    console.log("Mesaj",message);
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "../../../constants/colors";
+import { Audio } from "expo-av";
 
 export default function EmergencyModal({
   visible,
@@ -17,8 +18,58 @@ export default function EmergencyModal({
   loading,
   setTrue,
 }) {
+  const [recording, setRecording] = useState();
+  const [audioPath, setAudioPath] = useState("");
   const [emergencyMessage, setEmergencyMessage] = useState("");
-  const [audioRecorded, setAudioRecorded] = useState(false);
+
+  useEffect(() => {
+    return recording
+      ? () => {
+          recording.setOnRecordingStatusUpdate(null);
+          recording.stopAndUnloadAsync();
+        }
+      : undefined;
+  }, [recording]);
+
+  const startRecording = async () => {
+    try {
+      console.log("Requesting permissions..");
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log("Starting recording..");
+      const newRecording = new Audio.Recording();
+      await newRecording.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      await newRecording.startAsync();
+      setRecording(newRecording);
+      console.log("Recording started");
+    } catch (error) {
+      console.error("Failed to start recording", error);
+    }
+  };
+
+  const stopRecording = async () => {
+    console.log("Stopping recording..");
+    if (!recording) return;
+    try {
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      setAudioPath(uri);
+      setRecording(undefined);
+      console.log("Recording stopped, URI:", uri);
+    } catch (error) {
+      console.error("Failed to stop recording", error);
+    }
+  };
+
+  const sendEmergency = () => {
+    handleEmergency(audioPath);
+    setTrue();
+  };
 
   return (
     <Modal
@@ -60,6 +111,7 @@ export default function EmergencyModal({
               padding: 5,
               width: "100%",
               borderRadius: 10,
+              color:Colors.honeydew
             }}
             onChangeText={(text) => setEmergencyMessage(text)}
           />
@@ -75,12 +127,12 @@ export default function EmergencyModal({
               width: 64,
               height: 64,
             }}
-            onPress={() => setAudioRecorded(!audioRecorded)}
+            onPress={recording ? stopRecording : startRecording}
           >
             <FontAwesome name="microphone" size={24} color={"dodgerblue"} />
           </TouchableOpacity>
           <Text style={{ color: "white" }}>
-            {audioRecorded ? "Kaydediliyor..." : ""}
+            {recording ? "Recording..." : ""}
           </Text>
           <View
             style={{
@@ -102,13 +154,7 @@ export default function EmergencyModal({
             {loading ? (
               <ActivityIndicator size="large" color="dodgerblue" />
             ) : (
-              <TouchableOpacity
-                style={{ padding: 8 }}
-                onPress={() => {
-                  handleEmergency(emergencyMessage, audioRecorded);
-                  setTrue();
-                }}
-              >
+              <TouchableOpacity style={{ padding: 8 }} onPress={sendEmergency}>
                 <Text style={{ color: Colors.limeGreen, textAlign: "right" }}>
                   Gönder
                 </Text>

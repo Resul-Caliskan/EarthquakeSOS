@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   coordinate: [{ type: String }],
   statue: { type: Boolean },
   message: { type: String },
-  record:{type:String}
+  record: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);

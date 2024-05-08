@@ -1,9 +1,25 @@
 const config = require("../config/config");
 const User = require("../models/user");
 const { userCache } = require("../config/userCache");
+const multer = require("multer");
+const path = require("path");
+
+// Multer ayarları
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "datas/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, "audio_" + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 
 async function updateCoordinate(req, res) {
-  const { coordinate, id, message, record } = req.body;
+  const { coordinate, id, message } = req.body;
+  const record = req.file ? req.file.filename : "";
+
   console.log("Cordinate", coordinate);
   try {
     const updateCoordinateUser = await User.findByIdAndUpdate(id, {
@@ -23,11 +39,8 @@ async function updateCoordinate(req, res) {
   }
 }
 
-async function getSafetyCoordinates(req, res) {
-  try {
-    // const response= axios.get("güvenli yerler url");
-    //const safetyAreas= response.data.safetyAreas;
-  } catch (error) {}
-}
-
-module.exports = { updateCoordinate };
+// Multer middleware'ini ayrı bir nesne olarak dışa aktar
+module.exports = {
+  updateCoordinate,
+  uploadMiddleware: upload.single("record"),
+};

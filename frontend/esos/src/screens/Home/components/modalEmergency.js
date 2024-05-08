@@ -10,11 +10,12 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "../../../constants/colors";
 import { Audio } from "expo-av";
+import axios from "axios"; // Import axios for making HTTP requests
+import getLocation from "../../../utils/getLocation";
 
 export default function EmergencyModal({
   visible,
   closeModal,
-  handleEmergency,
   loading,
   setTrue,
 }) {
@@ -66,9 +67,38 @@ export default function EmergencyModal({
     }
   };
 
-  const sendEmergency = () => {
-    handleEmergency(audioPath);
-    setTrue();
+  const sendEmergency = async () => {
+    try {
+      const { latitude, longitude } = await getLocation();
+      console.log("Latitude:", latitude, "Longitude:", longitude);
+
+      // Create FormData object to send data including file
+      const formData = new FormData();
+      formData.append("id", "65f58ecc2be8a84b7704c5ed");
+      formData.append("coordinate", JSON.stringify([latitude, longitude]));
+      formData.append("message", emergencyMessage ? emergencyMessage : "");
+      formData.append("audioRecorded", {
+        uri: audioPath,
+        name: "audio.mp3",
+        type: "audio/mp3",
+      });
+
+      const response = await axios.put(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Cevap: ", response.data.data);
+      if (response.status === 200) {
+        setTrue(); // veya başka bir işlem yapılabilir
+      }
+    } catch (error) {
+      console.error("Hata: ", error);
+    }
   };
 
   return (
@@ -111,7 +141,7 @@ export default function EmergencyModal({
               padding: 5,
               width: "100%",
               borderRadius: 10,
-              color:Colors.honeydew
+              color: Colors.honeydew,
             }}
             onChangeText={(text) => setEmergencyMessage(text)}
           />

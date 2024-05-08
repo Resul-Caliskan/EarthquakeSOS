@@ -49,28 +49,6 @@ export default function Home() {
   const handleSafeButtonClick = () => {
     setConfirmModalVisible(true);
   };
-  const handleEmergcy = async () => {
-    const { latitude, longitude } = await getLocation();
-    setLocation({ latitude, longitude });
-    try {
-      const response = await axios.put(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
-        {
-          id: "65f58ecc2be8a84b7704c5ed",
-          coordinate: [latitude, longitude],
-          // message: emergencyMessage,
-          // audioRecorded: audioRecorded,
-        }
-      );
-      console.log("Cevap" + response.data.data);
-      if (response.status === 200) {
-        setLoading(false);
-        setEmergencyModal(false);
-      }
-    } catch (error) {
-      console.error("Hata: " + error);
-    }
-  };
 
   const handleConfirmation = (confirmed) => {
     if (confirmed) {
@@ -121,7 +99,6 @@ export default function Home() {
       <EmergencyModal
         visible={emergencyModal}
         closeModal={() => setEmergencyModal(false)}
-        handleEmergency={() => handleEmergcy()}
         loading={loading}
         setTrue={() => setLoading(true)}
       />

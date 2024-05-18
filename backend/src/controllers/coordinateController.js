@@ -3,11 +3,16 @@ const User = require("../models/user");
 const { userCache } = require("../config/userCache");
 const multer = require("multer");
 const path = require("path");
+const fs = require('fs');
 
 // Multer ayarları
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "datas/");
+    const dir = path.join(__dirname, '../datas');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+    cb(null, dir);
   },
   filename: function (req, file, cb) {
     cb(null, "audio_" + Date.now() + path.extname(file.originalname));

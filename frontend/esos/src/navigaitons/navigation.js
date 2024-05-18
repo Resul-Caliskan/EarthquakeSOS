@@ -3,8 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Login from "../screens/Login/login";
-import Register from "../screens/Register/register";
 import Home from "../screens/Home/home";
+import RegisterScreen from "../screens/Register/register";
 import ForgotPasswordScreen from "../screens/Login/forgotPassword";
 
 const Tab = createBottomTabNavigator();
@@ -19,7 +19,7 @@ export default function NavigationScreen() {
       >
         <Stack.Group>
           <Stack.Screen name="login" component={Login} />
-          <Stack.Screen name="register" component={Register} />
+          <Stack.Screen name="register" component={RegisterScreen} />
           <Stack.Screen name="forgot" component={ForgotPasswordScreen} />
         </Stack.Group>
         <Stack.Group>

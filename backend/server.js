@@ -3,6 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const fs = require('fs');
+const path = require('path');
 const config = require("./src/config/config");
 const CoordinateRoutes = require("./src/routes/coordinateRoutes");
 const AuthRoutes = require("./src/routes/authRoutes");
@@ -10,6 +12,10 @@ const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 
 const app = express();
+const dataDir = path.join(__dirname, 'datas');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir);
+}
 const server = http.createServer(app);
 socketConfig.initializeSocket(server);
 

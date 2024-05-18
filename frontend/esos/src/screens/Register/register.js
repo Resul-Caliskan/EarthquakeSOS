@@ -12,21 +12,15 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { Colors } from "../../constants/colors";
-// import firebase from "firebase/compat/app";
-// import "firebase/compat/auth";
-// import "firebase/compat/database";
-// import firebaseConfig from "../../backEnd/firebaseFunctions/firebaseConfig";
+import axios from "axios";
 import BackButton from "../../components/goBackButton";
-
-// firebase.initializeApp(firebaseConfig);
+import { showToast } from "../../utils/toastMessage";
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Yeni eklendi
-  const [score, setScore] = useState(0);
-  const [weeklyStats, setWeeklyStats] = useState([0, 0, 0, 0, 0, 0, 0]);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -50,23 +44,20 @@ const RegisterScreen = ({ navigation }) => {
       alert("Şifreler eşleşmiyor. Lütfen tekrar kontrol edin.");
       return;
     }
-    // try {
-    //   const userCredential = await firebase
-    //     .auth()
-    //     .createUserWithEmailAndPassword(email, password);
-
-    //   // Kullanıcı bilgilerini Firestore'a kaydet
-    //   await firebase.firestore().collection("users").doc(email).set({
-    //     name,
-    //     score,
-    //     weeklyStats,
-    //   });
-
-    //   console.log("Kullanıcı başarıyla oluşturuldu:", userCredential.user.uid);
-    //   navigation.replace("Home", { email: email });
-    // } catch (error) {
-    //   console.error("Kullanıcı oluşturma hatası:", error.message);
-    // }
+    try {
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/auth/register`,
+        {
+          email: email,
+          password: password,
+          name: name,
+        }
+      );
+      showToast(response.data.message);
+    } catch (error) {
+      console.error(error);
+      showToast("Kayıt işlemi başarısız oldu!");
+    }
   };
   return (
     <KeyboardAvoidingView

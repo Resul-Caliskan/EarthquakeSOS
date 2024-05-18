@@ -20,26 +20,36 @@ async function updateCoordinate(req, res) {
   const { coordinate, id, message } = req.body;
   const record = req.file ? req.file.filename : "";
 
-  console.log("Cordinate", coordinate);
+  console.log("Coordinate:", coordinate);
   try {
-    const updateCoordinateUser = await User.findByIdAndUpdate(id, {
-      coordinate: coordinate,
-      message: message,
-      record: record,
-    });
+    const updateCoordinateUser = await User.findByIdAndUpdate(
+      id,
+      {
+        coordinate: coordinate,
+        message: message,
+        record: record,
+      },
+      { new: true }
+    );
+
+    if (!updateCoordinateUser) {
+      return res.status(404).json({
+        message: "Kullanıcı bulunamadı",
+      });
+    }
 
     res.status(200).json({
       message: "Koordinat Başarılı Bir Şekilde Alındı",
       data: updateCoordinateUser,
     });
   } catch (error) {
+    console.error("Error updating coordinate:", error);
     res.status(500).json({
       message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
     });
   }
 }
 
-// Multer middleware'ini ayrı bir nesne olarak dışa aktar
 module.exports = {
   updateCoordinate,
   uploadMiddleware: upload.single("record"),

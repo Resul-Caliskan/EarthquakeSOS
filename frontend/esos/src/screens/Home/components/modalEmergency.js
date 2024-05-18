@@ -71,7 +71,7 @@ export default function EmergencyModal({
     try {
       const { latitude, longitude } = await getLocation();
       console.log("Latitude:", latitude, "Longitude:", longitude);
-  
+
       // Create FormData object to send data including file
       const formData = new FormData();
       formData.append("id", "65f58ecc2be8a84b7704c5ed");
@@ -82,7 +82,7 @@ export default function EmergencyModal({
         name: "audio.mp3",
         type: "audio/mp3",
       });
-  
+
       const response = await axios.put(
         `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
         formData,
@@ -97,10 +97,12 @@ export default function EmergencyModal({
         setTrue(); // veya başka bir işlem yapılabilir
       }
     } catch (error) {
-      console.error("Hata: ", error.response ? error.response.data : error.message);
+      console.error(
+        "Hata: ",
+        error.response ? error.response.data : error.message
+      );
     }
   };
-  
 
   return (
     <Modal

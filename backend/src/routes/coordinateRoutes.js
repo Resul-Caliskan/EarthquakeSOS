@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
+const { updateCoordinate, uploadMiddleware }= require("../controllers/coordinateController");
 const router = express.Router();
-const { updateCoordinate, uploadMiddleware } = require('../controllers/yourController');
 
 router.put('/coordinate/send-my-coordinate', uploadMiddleware, updateCoordinate);
 

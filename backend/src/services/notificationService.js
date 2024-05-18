@@ -6,4 +6,5 @@ exports.sendNotification = (message) => {
   const io = socketConfig.getSocketIo();
   io.emit("notification", { message: message });
   console.log("Mesaj: ",message);
+
 };

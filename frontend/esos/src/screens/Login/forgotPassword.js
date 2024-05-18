@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -9,22 +9,44 @@ import {
   ImageBackground,
   Platform,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { Colors } from "../../constants/colors";
 
-const LoginScreen = ({ navigation }) => {
+const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const handleLogin = async () => {
-    navigation.replace("home");
-    //Backend auth bağlantısı olacak
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert("Hata", "Lütfen e-posta adresinizi girin.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://your-backend-api.com/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      if (response.ok) {
+        Alert.alert(
+          "Başarılı",
+          "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi."
+        );
+      } else {
+        Alert.alert("Hata", "Bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    } catch (error) {
+      Alert.alert("Hata", "Bir hata oluştu. Lütfen tekrar deneyin.");
+    }
   };
-  const handleRegisterButton = () => {
-    navigation.navigate("register");
-  };
-  const handleForgotButton = () => {
-    navigation.navigate("forgot");
-  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -82,14 +104,13 @@ const LoginScreen = ({ navigation }) => {
                 style={[
                   styles.text,
                   {
-                    fontSize: 12,
+                    fontSize: 18,
                     fontWeight: "600",
-
                     marginTop: 5,
                   },
                 ]}
               >
-                Devam Etmek İçin Giriş Yapın
+                Şifre Sıfırlama
               </Text>
             </View>
             <View
@@ -109,69 +130,18 @@ const LoginScreen = ({ navigation }) => {
               placeholderTextColor="#E4E1E1"
               keyboardType="email-address"
             />
-            <View
-              style={{
-                width: "60%",
-                alignItems: "flex-start",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Text style={[styles.text]}>Şifre</Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              onChangeText={(text) => setPassword(text)}
-              value={password}
-              placeholder="Şifre giriniz..."
-              placeholderTextColor="#E4E1E1"
-              secureTextEntry
-            />
             <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                handleLogin();
-              }}
+              onPress={handleForgotPassword}
             >
-              <Text style={styles.text}>Giriş</Text>
+              <Text style={styles.text}>Gönder</Text>
             </TouchableOpacity>
-            <View
-              style={{
-                width: "100%",
-                marginTop: 20,
-                flexDirection: "row",
-                justifyContent: "space-around",
-                alignItems: "center",
-              }}
+            <TouchableOpacity
+              style={[styles.button, { marginTop: 20 }]}
+              onPress={() => navigation.goBack()}
             >
-              <TouchableOpacity
-                onPress={() => {
-                  handleForgotButton();
-                }}
-              >
-                <Text
-                  style={[
-                    styles.text,
-                    { borderBottomWidth: 1, borderColor: Colors.white },
-                  ]}
-                >
-                  Şifremi Unuttum
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  handleRegisterButton();
-                }}
-              >
-                <Text
-                  style={[
-                    styles.text,
-                    { borderBottomWidth: 1, borderColor: Colors.white },
-                  ]}
-                >
-                  Kayıt Ol
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={styles.text}>Geri Dön</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
@@ -179,7 +149,6 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -196,9 +165,9 @@ const styles = StyleSheet.create({
     flex: 2,
     width: "100%",
     backgroundColor: Colors.red,
-    borderTopRightRadius: 80,
+    borderTopLeftRadius: 80,
     borderTopWidth: 3,
-    borderEndWidth: 3,
+    borderStartWidth: 3,
     borderColor: Colors.black,
     alignItems: "center",
     justifyContent: "flex-start",
@@ -227,3 +196,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C2120",
   },
 });
+
+export default ForgotPasswordScreen;

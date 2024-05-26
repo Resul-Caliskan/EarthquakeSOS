@@ -6,6 +6,7 @@ import Login from "../screens/Login/login";
 import Home from "../screens/Home/home";
 import RegisterScreen from "../screens/Register/register";
 import ForgotPasswordScreen from "../screens/Login/forgotPassword";
+import SaglikTakipEkrani from "../screens/Health/SaglikTakipEkrani";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ export default function NavigationScreen() {
         </Stack.Group>
         <Stack.Group>
           <Stack.Screen name="home" component={Home} />
+          <Stack.Screen name="health" component={SaglikTakipEkrani} />
         </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>

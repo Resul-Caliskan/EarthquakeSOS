@@ -18,7 +18,7 @@ import getLocation from "../../utils/getLocation";
 import { FontAwesome } from "@expo/vector-icons";
 import EmergencyModal from "./components/modalEmergency";
 
-export default function Home() {
+export default function Home({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
@@ -82,9 +82,9 @@ export default function Home() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buton1}
-            onPress={handleSafeButtonClick}
+            onPress={() => navigation.navigate("health")}
           >
-            <Text style={styles.text}>Güvendeyim</Text>
+            <Text style={styles.text}>Sağlık Bilgilerim</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
@@ -95,6 +95,7 @@ export default function Home() {
             ACİL YARDIM
           </Text>
         </TouchableOpacity>
+ 
       </View>
       <EmergencyModal
         visible={emergencyModal}
@@ -134,7 +135,7 @@ export default function Home() {
           ))}
         </View>
       </Modal>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={confirmModalVisible}
@@ -164,7 +165,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 }

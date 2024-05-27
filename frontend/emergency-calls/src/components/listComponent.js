@@ -195,6 +195,11 @@ export default function ListComponent() {
 
     fetchData();
     socket.on("emergencyWeb", (data) => {
+      const coordinates = data.coordinate[0]
+      .replace("[", "")
+      .replace("]", "")
+      .split(",")
+      .map((coord) => parseFloat(coord.trim()));
       const newEmergency = createData(
         data.id,
         data.name,
@@ -202,8 +207,9 @@ export default function ListComponent() {
         data.time,
         data.audioUrl,
         data.healthInfo,
-        data.coordinate
+        coordinates
       );
+      
       setRows((prevRows) => [newEmergency, ...prevRows]);
     });
 

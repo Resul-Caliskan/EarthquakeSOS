@@ -24,8 +24,8 @@ export default function Home({ navigation }) {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
   const route = useRoute();
-  console.log("paarmas:",route.params);
-  const { location,id } = route.params;
+  console.log("paarmas:", route.params);
+  const { location, id } = route.params;
   console.log("home location:", location);
   console.log("id geldi mi Kardeş:", id);
   const [nearbyPeople, setNearbyPeople] = useState([
@@ -102,6 +102,7 @@ export default function Home({ navigation }) {
       </View>
       <EmergencyModal
         visible={emergencyModal}
+        id={id}
         closeModal={() => setEmergencyModal(false)}
       />
       <Modal

@@ -26,9 +26,8 @@ const LoginScreen = ({ navigation }) => {
         }
       );
       console.log(process.env.EXPO_PUBLIC_API_URL);
-      console.log("zortti",response.data.userName);
+
       if (response.status === 200) {
-        console.log("id mi? :", response.data.id);
         navigation.navigate("home", { id: response.data.id });
       }
     } catch (error) {

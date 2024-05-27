@@ -16,6 +16,7 @@ import { showToast } from "../../../utils/toastMessage";
 
 export default function EmergencyModal({
   visible,
+  id,
   closeModal,
 }) {
   const [recording, setRecording] = useState();
@@ -77,7 +78,7 @@ export default function EmergencyModal({
 
       // Create FormData object to send data including file
       const formData = new FormData();
-      formData.append("id", "65f58ecc2be8a84b7704c5ed");
+      formData.append("id",id );
       formData.append("coordinate", JSON.stringify([latitude, longitude]));
       formData.append(
         "message",

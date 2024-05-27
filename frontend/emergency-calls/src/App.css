@@ -132,7 +132,7 @@ body {
   height: 40px;
   display: inline-block;
   margin-right: 20px;
-  background-color: #FFFFFF;
+
   border-radius: 8px;
   justify-content: center;
   text-align: center;
@@ -141,7 +141,7 @@ body {
 .menu-link {
   width: auto;
   height: 40px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   text-align: center;

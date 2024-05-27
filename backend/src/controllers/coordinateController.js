@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Base URL for server
-const BASE_URL = config.BASE_URL || "http://localhost:5000"; // Use the appropriate base URL for your server
+const BASE_URL = config.BASE_URL || "https://earthquakesos.onrender.com"; // Use the appropriate base URL for your server
 
 async function updateCoordinate(req, res) {
   const { coordinate, id, message, date } = req.body;

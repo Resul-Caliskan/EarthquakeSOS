@@ -25,7 +25,7 @@ export default function Home({ navigation }) {
   const [emergencyModal, setEmergencyModal] = useState(false);
   const route = useRoute();
   const { location } = route.params;
-  console.log("home location:",location);
+  console.log("home location:", location);
   const [loading, setLoading] = useState(false);
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },

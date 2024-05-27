@@ -76,7 +76,10 @@ export default function EmergencyModal({
       const formData = new FormData();
       formData.append("id", "65f58ecc2be8a84b7704c5ed");
       formData.append("coordinate", JSON.stringify([latitude, longitude]));
-      formData.append("message", emergencyMessage ? emergencyMessage : "");
+      formData.append(
+        "message",
+        emergencyMessage ? emergencyMessage : "Acil Durum Çağrısı"
+      );
       formData.append("record", {
         uri: audioPath,
         name: "audio.mp3",

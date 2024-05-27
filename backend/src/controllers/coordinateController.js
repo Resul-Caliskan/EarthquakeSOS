@@ -4,6 +4,7 @@ const { userCache } = require("../config/userCache");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { getSocketIo } = require("../config/notificationConfig");
 
 // Multer ayarları
 const storage = multer.diskStorage({
@@ -47,6 +48,22 @@ async function updateCoordinate(req, res) {
         message: "Kullanıcı bulunamadı",
       });
     }
+
+    // Soket bağlantısını al
+    const io = getSocketIo();
+
+    // İstemcilere güncelleme mesajı gönder
+    io.emit("emergencyWeb", {
+      id: updateCoordinateUser._id,
+      name: updateCoordinateUser.name, // Kullanıcının adını kullanabilirsiniz
+      message: updateCoordinateUser.message,
+      time: updateCoordinateUser.createdAt,
+      audioUrl: updateCoordinateUser.record
+        ? `${BASE_URL}/datas/${updateCoordinateUser.record}`
+        : null,
+      healthInfo: updateCoordinateUser.healthInfo,
+      coordinate: updateCoordinateUser.coordinate,
+    });
 
     res.status(200).json({
       message: "Koordinat Başarılı Bir Şekilde Alındı",

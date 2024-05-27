@@ -17,7 +17,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const handleLogin = async () => {
     navigation.replace("home");
-    //Backend auth bağlantısı olacak
+    
   };
   const handleRegisterButton = () => {
     navigation.navigate("register");

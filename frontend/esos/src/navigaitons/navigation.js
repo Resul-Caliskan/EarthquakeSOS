@@ -11,7 +11,8 @@ import SaglikTakipEkrani from "../screens/Health/SaglikTakipEkrani";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-export default function NavigationScreen() {
+export default function NavigationScreen({location}) {
+  console.log("navigation location:",location)
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -24,7 +25,7 @@ export default function NavigationScreen() {
           <Stack.Screen name="forgot" component={ForgotPasswordScreen} />
         </Stack.Group>
         <Stack.Group>
-          <Stack.Screen name="home" component={Home} />
+          <Stack.Screen name="home" component={Home} initialParams={{location:location}} />
           <Stack.Screen name="health" component={SaglikTakipEkrani} />
         </Stack.Group>
       </Stack.Navigator>

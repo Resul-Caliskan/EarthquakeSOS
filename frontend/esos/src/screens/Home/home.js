@@ -17,12 +17,15 @@ import MapComponent from "./components/MapComponent";
 import getLocation from "../../utils/getLocation";
 import { FontAwesome } from "@expo/vector-icons";
 import EmergencyModal from "./components/modalEmergency";
+import { useRoute } from "@react-navigation/native";
 
-export default function Home({navigation}) {
+export default function Home({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
-  const [location, setLocation] = useState(null);
+  const route = useRoute();
+  const { location } = route.params;
+  console.log("home location:",location);
   const [loading, setLoading] = useState(false);
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },
@@ -32,19 +35,19 @@ export default function Home({navigation}) {
   const [emergencyMessage, setEmergencyMessage] = useState("Acil Yardım");
   const [audioRecorded, setAudioRecorded] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { latitude, longitude } = await getLocation();
-        setLocation({ latitude, longitude });
-        console.log("location", latitude, longitude);
-      } catch (error) {
-        console.error("Hata:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const { latitude, longitude } = await getLocation();
+  //       setLocation({ latitude, longitude });
+  //       console.log("location", latitude, longitude);
+  //     } catch (error) {
+  //       console.error("Hata:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const handleSafeButtonClick = () => {
     setConfirmModalVisible(true);
@@ -95,7 +98,6 @@ export default function Home({navigation}) {
             ACİL YARDIM
           </Text>
         </TouchableOpacity>
- 
       </View>
       <EmergencyModal
         visible={emergencyModal}

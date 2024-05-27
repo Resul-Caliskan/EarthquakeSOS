@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 const MapComponent = ({ userLocation }) => {
+  console.log("Location user:", userLocation);
   return (
     <View style={styles.container}>
       <MapView
@@ -12,6 +13,8 @@ const MapComponent = ({ userLocation }) => {
             ? {
                 latitude: userLocation.latitude,
                 longitude: userLocation.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
               }
             : {
                 latitude: 41.0082,

@@ -13,12 +13,15 @@ import { Audio } from "expo-av";
 import axios from "axios"; // Import axios for making HTTP requests
 import getLocation from "../../../utils/getLocation";
 import { showToast } from "../../../utils/toastMessage";
+import socket from "../../../config/notificationsConfig";
+import * as FileSystem from "expo-file-system";
 
 export default function EmergencyModal({ visible, closeModal }) {
   const [recording, setRecording] = useState();
   const [audioPath, setAudioPath] = useState("");
   const [emergencyMessage, setEmergencyMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     return recording
       ? () => {
@@ -72,6 +75,11 @@ export default function EmergencyModal({ visible, closeModal }) {
       // Get current date
       const currentDate = new Date().toISOString();
 
+      // Convert audio file to base64
+      const base64Audio = await FileSystem.readAsStringAsync(audioPath, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
       // Create FormData object to send data including file
       const formData = new FormData();
       formData.append("id", "65f58ecc2be8a84b7704c5ed");
@@ -99,7 +107,16 @@ export default function EmergencyModal({ visible, closeModal }) {
       console.log("Cevap: ", response.data.data);
       if (response.status === 200) {
         showToast("Acil Yardım Talebi Başarıyla Gönderildi");
-        setLoading(false); // Gönderme işlemi tamamlandığında loading durumunu false olarak güncelle
+
+        socket.emit("emergency", {
+          id: "65f58ecc2be8a84b7704c5ed",
+          coordinate: [latitude, longitude],
+          message: emergencyMessage ? emergencyMessage : "Acil Durum Çağrısı",
+          record: base64Audio, // base64 encoded audio data
+          date: currentDate,
+        });
+
+        setLoading(false);
       }
     } catch (error) {
       showToast(

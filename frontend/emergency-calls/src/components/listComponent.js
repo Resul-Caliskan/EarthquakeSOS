@@ -15,17 +15,16 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet"; // Leaflet kütüphanesini içeri aktar
+import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import socket from "./path_to_your_socket_config_file"; // Adjust the import according to your file structure
 
-// Dark tema oluştur
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
 });
 
-// Icon oluşturma
 const customIcon = L.icon({
   iconUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
@@ -64,7 +63,7 @@ function createData(
 
 function Row(props) {
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <React.Fragment>
@@ -118,7 +117,6 @@ function Row(props) {
                 Kronik Hastalıklar:{" "}
                 {row.healthInfo.kronikHastaliklar.join(", ") || "Yok"}
               </Typography>
-              {console.log("coordinate:", row.coordinate)}
               {row.coordinate && row.coordinate.length === 2 && (
                 <MapContainer
                   style={{
@@ -174,13 +172,11 @@ export default function ListComponent() {
         const data = response.data.data;
         console.log("Data:", response.data.data);
         const formattedData = data.map((item) => {
-          // Parse the coordinate string and split it by comma
           const coordinates = item.coordinate[0]
             .replace("[", "")
             .replace("]", "")
             .split(",")
             .map((coord) => parseFloat(coord.trim()));
-          // Create data object with extracted coordinates
           return createData(
             item._id,
             item.name,
@@ -198,6 +194,25 @@ export default function ListComponent() {
     };
 
     fetchData();
+
+    // WebSocket event listener for incoming emergency data
+    socket.on("emergencyWeb", (data) => {
+      const newEmergency = createData(
+        data.id,
+        data.name,
+        data.message,
+        data.time,
+        data.record,
+        data.healthInfo,
+        data.coordinate
+      );
+      setRows((prevRows) => [newEmergency, ...prevRows]);
+    });
+
+    // // Cleanup WebSocket event listener on component unmount
+    // return () => {
+    //   socket.off("emergency");
+    // };
   }, []);
 
   return (
@@ -207,7 +222,7 @@ export default function ListComponent() {
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell>Çağrı Başlığı</TableCell>
+              <TableCell>Çağrıyı Yapan</TableCell>
               <TableCell>Açıklama</TableCell>
               <TableCell>Zaman</TableCell>
               <TableCell>Ses Kaydı</TableCell>

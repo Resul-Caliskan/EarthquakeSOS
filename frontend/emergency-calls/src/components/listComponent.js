@@ -149,7 +149,7 @@ Row.propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
-    time: PropTypes.string.isRequired,
+    time: PropTypes.string,
     audioUrl: PropTypes.string,
     healthInfo: PropTypes.shape({
       alerjiler: PropTypes.array.isRequired,
@@ -194,29 +194,23 @@ export default function ListComponent() {
     };
 
     fetchData();
-    const onNotificationConnect = () => {
-      console.log("Bağladım Web List Comp");
-    };
-    socket.on("connect", onNotificationConnect);
-    // WebSocket event listener for incoming emergency data
     socket.on("emergencyWeb", (data) => {
-      console.log("data.name:", data.name);
       const newEmergency = createData(
         data.id,
         data.name,
         data.message,
         data.time,
-        data.record,
+        data.audioUrl,
         data.healthInfo,
         data.coordinate
       );
       setRows((prevRows) => [newEmergency, ...prevRows]);
     });
 
-    // // Cleanup WebSocket event listener on component unmount
-    // return () => {
-    //   socket.off("emergency");
-    // };
+    // Cleanup WebSocket event listener on component unmount
+    return () => {
+      socket.off("emergencyWeb");
+    };
   }, []);
 
   return (

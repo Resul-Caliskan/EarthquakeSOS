@@ -43,9 +43,10 @@ async function login(req, res) {
       expiresIn: "365d",
     });
 
-    res.json({
+    res.status(200).json({
       message: "Giriş İşlemi Başarılı",
       accessToken: accessToken,
+      id: user._id,
       userName: user.name,
     });
   } catch (error) {

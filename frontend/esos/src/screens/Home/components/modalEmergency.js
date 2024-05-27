@@ -106,7 +106,7 @@ export default function EmergencyModal({ visible, closeModal }) {
       );
       console.log("Cevap: ", response.data.data);
       if (response.status === 200) {
-        showToast("Acil Yardım Talebi Başarıyla Gönderildi");
+       
 
         socket.emit("emergency", {
           id: "65f58ecc2be8a84b7704c5ed",
@@ -117,6 +117,7 @@ export default function EmergencyModal({ visible, closeModal }) {
         });
 
         setLoading(false);
+        showToast("Acil Yardım Talebi Başarıyla Gönderildi");
       }
     } catch (error) {
       showToast(

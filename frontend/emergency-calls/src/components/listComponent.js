@@ -17,7 +17,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import socket from "./path_to_your_socket_config_file"; // Adjust the import according to your file structure
+import socket from "../config/socketConfig"; // Adjust the import according to your file structure
 
 const darkTheme = createTheme({
   palette: {

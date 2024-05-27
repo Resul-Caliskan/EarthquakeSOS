@@ -169,7 +169,7 @@ export default function ListComponent() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/coordinate/emergency"
+          "https://earthquakesos.onrender.com/api/coordinate/emergency"
         );
         const data = response.data.data;
         console.log("Data:", response.data.data);

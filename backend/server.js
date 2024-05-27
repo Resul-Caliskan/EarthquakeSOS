@@ -16,7 +16,7 @@ const dataDir = path.join(__dirname, "datas");
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir);
 }
-app.use("/api/datas", express.static(dataDir));
+app.use("/datas", express.static(dataDir));
 
 const server = http.createServer(app);
 socketConfig.initializeSocket(server);

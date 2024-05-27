@@ -18,6 +18,7 @@ async function register(req, res) {
       email,
       password,
       name,
+      statue: true,
     });
     newUser.save();
     res.json({ message: "Kayıt olma işlemi başarıyla tamamlandı" });

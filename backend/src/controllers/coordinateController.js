@@ -3,12 +3,12 @@ const User = require("../models/user");
 const { userCache } = require("../config/userCache");
 const multer = require("multer");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 
 // Multer ayarları
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = path.join(__dirname, '../datas');
+    const dir = path.join(__dirname, "../datas");
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
@@ -33,6 +33,7 @@ async function updateCoordinate(req, res) {
         coordinate: coordinate,
         message: message,
         record: record,
+        statue: false,
       },
       { new: true }
     );

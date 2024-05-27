@@ -194,9 +194,13 @@ export default function ListComponent() {
     };
 
     fetchData();
-
+    const onNotificationConnect = () => {
+      console.log("Bağladım Web List Comp");
+    };
+    socket.on("connect", onNotificationConnect);
     // WebSocket event listener for incoming emergency data
     socket.on("emergencyWeb", (data) => {
+      console.log("data.name:", data.name);
       const newEmergency = createData(
         data.id,
         data.name,

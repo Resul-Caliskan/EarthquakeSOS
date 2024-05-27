@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import ListComponent from "./components/listComponent";
 import "leaflet/dist/leaflet.css";
-
+import socket from "./config/socketConfig";
 function App() {
   const [selectedOption, setSelectedOption] = useState("emergency");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
+  useEffect(() => {
+    const onNotificationConnect = () => {
+      console.log("Bağladım Web");
+    };
+    socket.on("connect", onNotificationConnect);
+    return () => {
+      socket.off("connect", onNotificationConnect);
+    };
+  }, []);
 
   return (
     <div style={{ flex: 1 }} className="App">
@@ -27,7 +36,7 @@ function App() {
               <div className="rectangleLeft"></div>
               <div className="rectangleCenter">
                 <label className="text-gray-700 flex items-center justify-center h-full labelTab text-xl font-semibold">
-                ESOS
+                  ESOS
                 </label>
               </div>
               <div className="rectangleRight"></div>
@@ -37,7 +46,9 @@ function App() {
         <ul className="menu">
           <li
             className={`menu-item ${
-              selectedOption === "emergency" ? "border-b-2 border-b-black bg-gray-200" : ""
+              selectedOption === "emergency"
+                ? "border-b-2 border-b-black bg-gray-200"
+                : ""
             }`}
           >
             <a
@@ -50,7 +61,9 @@ function App() {
           </li>
           <li
             className={`menu-item ${
-              selectedOption === "map" ? "border-b-2 border-b-black bg-gray-200":""
+              selectedOption === "map"
+                ? "border-b-2 border-b-black bg-gray-200"
+                : ""
             }`}
           >
             <a

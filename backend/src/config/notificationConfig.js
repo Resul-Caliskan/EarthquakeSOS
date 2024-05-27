@@ -8,7 +8,9 @@ exports.initializeSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("Client connected");
     io.on("emergency", async (response) => {
+      
       const id = response.id;
+      console.log("Emergency geldi",id);
       const message = response.message;
       const record = response.record;
       const coordinate = response.coordinate;
@@ -24,6 +26,7 @@ exports.initializeSocket = (server) => {
         healthInfo:user.healthInfo,
         time: date,
       });
+      console.log("Emergency gitti",date);
     });
   });
 };

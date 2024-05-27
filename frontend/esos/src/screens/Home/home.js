@@ -24,9 +24,10 @@ export default function Home({ navigation }) {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
   const route = useRoute();
-  const { location } = route.params;
+  console.log("paarmas:",route.params);
+  const { location,id } = route.params;
   console.log("home location:", location);
- 
+  console.log("id geldi mi Kardeş:", id);
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },
     { name: "Ayşe", status: "Güvende Değil" },

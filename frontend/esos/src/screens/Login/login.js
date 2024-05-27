@@ -11,13 +11,29 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { Colors } from "../../constants/colors";
-
+import axios from "axios";
+import { showToast } from "../../utils/toastMessage";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleLogin = async () => {
-    navigation.replace("home");
-    
+    try {
+      const response = await axios.post(
+        `${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`,
+        {
+          email: email,
+          password: password,
+        }
+      );
+      console.log(process.env.EXPO_PUBLIC_API_URL);
+      console.log("zortti",response.data.name);
+      if (response.status === 200) {
+        console.log("id mi? :", response.data.id);
+        navigation.navigate("home", { id: response.data.id });
+      }
+    } catch (error) {
+      showToast("Login İşlemi Başarısız! Girdiğiniz Bilgileri Kontrol Ediniz");
+    }
   };
   const handleRegisterButton = () => {
     navigation.navigate("register");

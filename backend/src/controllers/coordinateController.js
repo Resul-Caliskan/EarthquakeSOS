@@ -21,8 +21,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Base URL for server
+const BASE_URL = config.BASE_URL || "http://localhost:5000"; // Use the appropriate base URL for your server
+
 async function updateCoordinate(req, res) {
-  const { coordinate, id, message } = req.body;
+  const { coordinate, id, message, date } = req.body;
   const record = req.file ? req.file.filename : "";
 
   console.log("Coordinate:", coordinate);
@@ -34,6 +37,7 @@ async function updateCoordinate(req, res) {
         message: message,
         record: record,
         statue: false,
+        createdAt: date,
       },
       { new: true }
     );
@@ -62,16 +66,24 @@ async function getAllEmergency(req, res) {
     const users = await User.find({ statue: false });
 
     // Kullanıcılar bulunamazsa
-    if (!users) {
+    if (!users || users.length === 0) {
       return res.status(404).json({
         message: "Acil durum çağrısı yapan kullanıcı bulunamadı",
       });
     }
 
-    // Kullanıcılar bulunduysa, tüm kullanıcı bilgilerini döndür
+    // Kullanıcılar bulunduysa, her kullanıcı için record URL'sini oluştur
+    const usersWithRecordUrls = users.map((user) => {
+      return {
+        ...user._doc,
+        recordUrl: user.record ? `${BASE_URL}/datas/${user.record}` : null,
+      };
+    });
+
+    // Kullanıcı bilgilerini döndür
     res.status(200).json({
       message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
-      data: users,
+      data: usersWithRecordUrls,
     });
   } catch (error) {
     // Hata durumunda logla ve hata mesajını döndür

@@ -26,7 +26,7 @@ export default function Home({ navigation }) {
   const route = useRoute();
   const { location } = route.params;
   console.log("home location:", location);
-  const [loading, setLoading] = useState(false);
+ 
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },
     { name: "Ayşe", status: "Güvende Değil" },
@@ -102,8 +102,6 @@ export default function Home({ navigation }) {
       <EmergencyModal
         visible={emergencyModal}
         closeModal={() => setEmergencyModal(false)}
-        loading={loading}
-        setTrue={() => setLoading(true)}
       />
       <Modal
         animationType="slide"

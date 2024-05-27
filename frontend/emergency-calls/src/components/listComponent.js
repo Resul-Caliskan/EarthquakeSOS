@@ -1,26 +1,64 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import PropTypes from "prop-types";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet"; // Leaflet kütüphanesini içeri aktar
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-function createData(id, title, description, time, audioUrl) {
+// Dark tema oluştur
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
+// Icon oluşturma
+const customIcon = L.icon({
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+});
+
+function createData(
+  id,
+  title,
+  description,
+  time,
+  audioUrl,
+  healthInfo,
+  coordinate
+) {
+  const defaultHealthInfo = {
+    alerjiler: [],
+    ilaclar: [],
+    kronikHastaliklar: [],
+    ...healthInfo,
+  };
   return {
     id,
     title,
     description,
     time,
     audioUrl,
+    healthInfo: defaultHealthInfo,
+    coordinate,
   };
 }
 
@@ -30,7 +68,7 @@ function Row(props) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -44,7 +82,7 @@ function Row(props) {
           {row.title}
         </TableCell>
         <TableCell>{row.description}</TableCell>
-        <TableCell>{row.time}</TableCell>
+        <TableCell>{new Date(row.time).toLocaleString()}</TableCell>
         <TableCell>
           {row.audioUrl && (
             <audio controls>
@@ -58,10 +96,48 @@ function Row(props) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
+              <Typography
+                variant="h6"
+                gutterBottom
+                component="div"
+                style={{ fontWeight: "bold" }}
+              >
                 Detaylar
               </Typography>
               <Typography>{row.description}</Typography>
+              <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+                Sağlık Bilgileri:
+              </Typography>
+              <Typography>
+                Alerjiler: {row.healthInfo.alerjiler.join(", ") || "Yok"}
+              </Typography>
+              <Typography>
+                İlaçlar: {row.healthInfo.ilaclar.join(", ") || "Yok"}
+              </Typography>
+              <Typography>
+                Kronik Hastalıklar:{" "}
+                {row.healthInfo.kronikHastaliklar.join(", ") || "Yok"}
+              </Typography>
+              {console.log("coordinate:", row.coordinate)}
+              {row.coordinate && row.coordinate.length === 2 && (
+                <MapContainer
+                  style={{
+                    height: "200px",
+                    width: "100%",
+                    marginTop: "10px",
+                  }}
+                  center={[row.coordinate[0], row.coordinate[1]]}
+                  zoom={13}
+                >
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <Marker
+                    position={[row.coordinate[0], row.coordinate[1]]}
+                    icon={customIcon}
+                  >
+                    <Popup>{row.title}</Popup>
+                  </Marker>
+                </MapContainer>
+              )}
             </Box>
           </Collapse>
         </TableCell>
@@ -72,39 +148,78 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
     audioUrl: PropTypes.string,
+    healthInfo: PropTypes.shape({
+      alerjiler: PropTypes.array.isRequired,
+      ilaclar: PropTypes.array.isRequired,
+      kronikHastaliklar: PropTypes.array.isRequired,
+    }).isRequired,
+    coordinate: PropTypes.arrayOf(PropTypes.number).isRequired,
   }).isRequired,
 };
 
-const rows = [
-  createData(1, 'Yardım Çağrısı 1', 'Açıklama 1', '2024-05-27T12:00:00Z', 'https://example.com/audio1.mp3'),
-  createData(2, 'Yardım Çağrısı 2', 'Açıklama 2', '2024-05-27T12:30:00Z', 'https://example.com/audio2.mp3'),
-  // Daha fazla veri eklenebilir
-];
-
 export default function ListComponent() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/coordinate/emergency"
+        );
+        const data = response.data.data;
+        console.log("Data:", response.data.data);
+        const formattedData = data.map((item) => {
+          // Parse the coordinate string and split it by comma
+          const coordinates = item.coordinate[0]
+            .replace("[", "")
+            .replace("]", "")
+            .split(",")
+            .map((coord) => parseFloat(coord.trim()));
+          // Create data object with extracted coordinates
+          return createData(
+            item._id,
+            item.name,
+            item.message,
+            item.time,
+            item.recordUrl,
+            item.healthInfo,
+            coordinates
+          );
+        });
+        setRows(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Çağrı Başlığı</TableCell>
-            <TableCell>Açıklama</TableCell>
-            <TableCell>Zaman</TableCell>
-            <TableCell>Ses Kaydı</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <Row key={row.id} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <ThemeProvider theme={darkTheme}>
+      <TableContainer component={Paper}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Çağrı Başlığı</TableCell>
+              <TableCell>Açıklama</TableCell>
+              <TableCell>Zaman</TableCell>
+              <TableCell>Ses Kaydı</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <Row key={row.id} row={row} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </ThemeProvider>
   );
 }

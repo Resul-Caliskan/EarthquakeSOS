@@ -24,6 +24,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     try {
       const response = await fetch(
+        //Buraya api gelecek
         "https://your-backend-api.com/forgot-password",
         {
           method: "POST",

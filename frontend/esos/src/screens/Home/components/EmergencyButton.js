@@ -12,7 +12,6 @@ const EmergencyButton = () => {
     //   (position) => {
     //     const { latitude, longitude } = position.coords;
     //     const coordinate = `${latitude},${longitude}`;
-
     //     axios
     //       .post(`${apiUrl}/emergency`, {
     //         coordinate,

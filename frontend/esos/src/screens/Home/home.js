@@ -17,13 +17,16 @@ import MapComponent from "./components/MapComponent";
 import getLocation from "../../utils/getLocation";
 import { FontAwesome } from "@expo/vector-icons";
 import EmergencyModal from "./components/modalEmergency";
+import { useRoute } from "@react-navigation/native";
 
-export default function Home() {
+export default function Home({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const route = useRoute();
+  const { location } = route.params;
+  console.log("home location:", location);
+ 
   const [nearbyPeople, setNearbyPeople] = useState([
     { name: "Ahmet", status: "Güvende" },
     { name: "Ayşe", status: "Güvende Değil" },
@@ -32,19 +35,19 @@ export default function Home() {
   const [emergencyMessage, setEmergencyMessage] = useState("Acil Yardım");
   const [audioRecorded, setAudioRecorded] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { latitude, longitude } = await getLocation();
-        setLocation({ latitude, longitude });
-        console.log("location", latitude, longitude);
-      } catch (error) {
-        console.error("Hata:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const { latitude, longitude } = await getLocation();
+  //       setLocation({ latitude, longitude });
+  //       console.log("location", latitude, longitude);
+  //     } catch (error) {
+  //       console.error("Hata:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const handleSafeButtonClick = () => {
     setConfirmModalVisible(true);
@@ -82,9 +85,9 @@ export default function Home() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buton1}
-            onPress={handleSafeButtonClick}
+            onPress={() => navigation.navigate("health")}
           >
-            <Text style={styles.text}>Güvendeyim</Text>
+            <Text style={styles.text}>Sağlık Bilgilerim</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity
@@ -99,8 +102,6 @@ export default function Home() {
       <EmergencyModal
         visible={emergencyModal}
         closeModal={() => setEmergencyModal(false)}
-        loading={loading}
-        setTrue={() => setLoading(true)}
       />
       <Modal
         animationType="slide"
@@ -134,7 +135,7 @@ export default function Home() {
           ))}
         </View>
       </Modal>
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={confirmModalVisible}
@@ -164,7 +165,7 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 }

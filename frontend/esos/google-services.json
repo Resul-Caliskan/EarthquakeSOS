@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "992035740967",
+    "project_id": "esos-2881a",
+    "storage_bucket": "esos-2881a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992035740967:android:f4b530f10b096dce7edd02",
+        "android_client_info": {
+          "package_name": "com.esos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqvR_4GOmG1atrJumguhkF1p9lb7LGFP0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

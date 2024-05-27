@@ -12,17 +12,13 @@ import { Colors } from "../../../constants/colors";
 import { Audio } from "expo-av";
 import axios from "axios"; // Import axios for making HTTP requests
 import getLocation from "../../../utils/getLocation";
+import { showToast } from "../../../utils/toastMessage";
 
-export default function EmergencyModal({
-  visible,
-  closeModal,
-  loading,
-  setTrue,
-}) {
+export default function EmergencyModal({ visible, closeModal }) {
   const [recording, setRecording] = useState();
   const [audioPath, setAudioPath] = useState("");
   const [emergencyMessage, setEmergencyMessage] = useState("");
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     return recording
       ? () => {
@@ -68,20 +64,28 @@ export default function EmergencyModal({
   };
 
   const sendEmergency = async () => {
+    setLoading(true);
     try {
       const { latitude, longitude } = await getLocation();
       console.log("Latitude:", latitude, "Longitude:", longitude);
+
+      // Get current date
+      const currentDate = new Date().toISOString();
 
       // Create FormData object to send data including file
       const formData = new FormData();
       formData.append("id", "65f58ecc2be8a84b7704c5ed");
       formData.append("coordinate", JSON.stringify([latitude, longitude]));
-      formData.append("message", emergencyMessage ? emergencyMessage : "");
+      formData.append(
+        "message",
+        emergencyMessage ? emergencyMessage : "Acil Durum Çağrısı"
+      );
       formData.append("record", {
         uri: audioPath,
         name: "audio.mp3",
         type: "audio/mp3",
       });
+      formData.append("date", currentDate); // Append current date
 
       const response = await axios.put(
         `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
@@ -94,13 +98,18 @@ export default function EmergencyModal({
       );
       console.log("Cevap: ", response.data.data);
       if (response.status === 200) {
-        setTrue(); // veya başka bir işlem yapılabilir
+        showToast("Acil Yardım Talebi Başarıyla Gönderildi");
+        setLoading(false); // Gönderme işlemi tamamlandığında loading durumunu false olarak güncelle
       }
     } catch (error) {
+      showToast(
+        "HATA! Acil yardım talebi gönderilirken bir hata oluştu lütfen tekrar deneyiniz."
+      );
       console.error(
         "Hata: ",
         error.response ? error.response.data : error.message
       );
+      setLoading(false);
     }
   };
 
@@ -165,7 +174,7 @@ export default function EmergencyModal({
             <FontAwesome name="microphone" size={24} color={"dodgerblue"} />
           </TouchableOpacity>
           <Text style={{ color: "white" }}>
-            {recording ? "Recording..." : ""}
+            {recording ? "Ses Kaydediliyor..." : ""}
           </Text>
           <View
             style={{

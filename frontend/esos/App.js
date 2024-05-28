@@ -24,38 +24,6 @@ export default function App() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const onNotificationConnect = () => {
-      console.log("Bağladım");
-    };
-
-    const onNotificationReceived = async (res) => {
-      console.log("Girdi");
-
-      try {
-        await scheduleNotification(res.message);
-        const { latitude, longitude } = await getLocation();
-        const response = await axios.put(
-          `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
-          {
-            id: "65f58ecc2be8a84b7704c5ed",
-            coordinate: [latitude, longitude],
-          }
-        );
-      } catch (error) {
-        console.error("Hata: " + error);
-      }
-    };
-
-    notificationsConfig.on("connect", onNotificationConnect);
-    notificationsConfig.on("notification", onNotificationReceived);
-
-    return () => {
-      notificationsConfig.off("connect", onNotificationConnect);
-      notificationsConfig.off("notification", onNotificationReceived);
-    };
-  }, []);
-
   return (
     <View style={styles.container}>
       <Navigation location={location} />

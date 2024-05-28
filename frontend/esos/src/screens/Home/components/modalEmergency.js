@@ -78,6 +78,7 @@ export default function EmergencyModal({
 
       // Create FormData object to send data including file
       const formData = new FormData();
+      console.log("form id:",id);
       formData.append("id",id );
       formData.append("coordinate", JSON.stringify([latitude, longitude]));
       formData.append(

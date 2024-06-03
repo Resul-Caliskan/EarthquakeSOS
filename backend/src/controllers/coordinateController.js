@@ -125,6 +125,7 @@ const multer = require("multer");
 const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
 const stream = require("stream");
+const { Readable } = require("stream");
 const { v4: uuidv4 } = require("uuid");
 
 // Configure multer to store files in memory
@@ -234,7 +235,60 @@ async function updateCoordinate(req, res) {
   }
 }
 
+async function getAllEmergency(req, res) {
+  try {
+    // Fetch users with statue set to false
+    const users = await User.find({ statue: false });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: "Acil durum çağrısı yapan kullanıcı bulunamadı",
+      });
+    }
+
+    // Fetch audio files from GridFS and convert them to base64
+    const usersWithRecordUrls = await Promise.all(
+      users.map(async (user) => {
+        let base64Audio = null;
+
+        if (user.record) {
+          const bucket = getBucket();
+          const downloadStream = bucket.openDownloadStreamByName(user.record);
+
+          const chunks = [];
+          for await (const chunk of downloadStream) {
+            chunks.push(chunk);
+          }
+
+          const buffer = Buffer.concat(chunks);
+          base64Audio = buffer.toString("base64");
+        }
+
+        return {
+          ...user._doc,
+          recordUrl: base64Audio
+            ? `data:audio/mp3;base64,${base64Audio}`
+            : null,
+        };
+      })
+    );
+
+    // Return the user data with audio files as base64
+    res.status(200).json({
+      message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
+      data: usersWithRecordUrls,
+    });
+  } catch (error) {
+    console.error("Error fetching emergency users:", error);
+    res.status(500).json({
+      message:
+        "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
+    });
+  }
+}
+
 module.exports = {
   updateCoordinate,
+  getAllEmergency,
   uploadMiddleware: upload.single("record"),
 };

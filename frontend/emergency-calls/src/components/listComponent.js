@@ -178,7 +178,7 @@ export default function ListComponent() {
             if (item.record) {
               item.audioUrl = `data:audio/mp3;base64,${item.record}`;
             }
-            console.log("Data Uadio:",item.audioUrl);
+            console.log("Data Uadio:",item.recordUrl);
             const coordinates = item.coordinate[0]
               .replace("[", "")
               .replace("]", "")
@@ -189,7 +189,7 @@ export default function ListComponent() {
               item.name,
               item.message,
               item.time,
-              item.audioUrl || "", 
+              item.recordUrl, 
               item.healthInfo,
               coordinates
             );

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   statue: { type: Boolean },
   message: { type: String },
   record: { type: String },
+  image: { type: String },
   createdAt: { type: Date },
 });
 

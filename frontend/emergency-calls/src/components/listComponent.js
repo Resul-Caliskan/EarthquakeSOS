@@ -85,7 +85,7 @@ function Row(props) {
         <TableCell>
           {row.audioUrl && (
             <audio controls>
-              <source src={row.audioUrl} type="audio/mpeg" />
+              <source src={row.audioUrl} type="audio/mp3" />
               Your browser does not support the audio element.
             </audio>
           )}
@@ -164,58 +164,72 @@ export default function ListComponent() {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
         const response = await axios.get(
           "https://earthquakesos.onrender.com/api/coordinate/emergency"
         );
-        const data = response.data.data;
-        console.log("Data:", response.data.data);
-        const formattedData = data.map((item) => {
-          const coordinates = item.coordinate[0]
-            .replace("[", "")
-            .replace("]", "")
-            .split(",")
-            .map((coord) => parseFloat(coord.trim()));
-          return createData(
-            item._id,
-            item.name,
-            item.message,
-            item.time,
-            item.recordUrl,
-            item.healthInfo,
-            coordinates
-          );
-        });
-        setRows(formattedData);
+        if (isMounted) {
+          const data = response.data.data;
+          console.log("Data:", response.data.data);
+          const formattedData = data.map((item) => {
+            if (item.record) {
+              item.audioUrl = `data:audio/mp3;base64,${item.record}`;
+            }
+            console.log("Data Uadio:",item.audioUrl);
+            const coordinates = item.coordinate[0]
+              .replace("[", "")
+              .replace("]", "")
+              .split(",")
+              .map((coord) => parseFloat(coord.trim()));
+            return createData(
+              item._id,
+              item.name,
+              item.message,
+              item.time,
+              item.audioUrl || "", 
+              item.healthInfo,
+              coordinates
+            );
+          });
+          setRows(formattedData);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-    socket.on("emergencyWeb", (data) => {
+
+    const handleEmergencyWeb = (data) => {
       const coordinates = data.coordinate[0]
-      .replace("[", "")
-      .replace("]", "")
-      .split(",")
-      .map((coord) => parseFloat(coord.trim()));
+        .replace("[", "")
+        .replace("]", "")
+        .split(",")
+        .map((coord) => parseFloat(coord.trim()));
       const newEmergency = createData(
         data.id,
         data.name,
         data.message,
         data.time,
-        data.audioUrl,
+        data.record ? `data:audio/mp3;base64,${data.record}` : "",
         data.healthInfo,
         coordinates
       );
-      
-      setRows((prevRows) => [newEmergency, ...prevRows]);
-    });
 
-    // Cleanup WebSocket event listener on component unmount
+      if (isMounted) {
+        setRows((prevRows) => [newEmergency, ...prevRows]);
+      }
+    };
+
+    socket.on("emergencyWeb", handleEmergencyWeb);
+
+    // Cleanup WebSocket event listener and isMounted flag on component unmount
     return () => {
-      socket.off("emergencyWeb");
+      isMounted = false;
+      socket.off("emergencyWeb", handleEmergencyWeb);
     };
   }, []);
 

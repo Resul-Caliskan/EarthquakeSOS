@@ -120,7 +120,6 @@
 // controllers/coordinateController.js
 // src/controllers/coordinateController.js
 
-
 // // Bu Çalışmıştı
 // const { ObjectId } = require('mongodb');
 // const multer = require('multer');
@@ -313,13 +312,12 @@
 //   uploadMiddleware: upload.single("record"),
 // };
 
-
-const { ObjectId } = require('mongodb');
-const multer = require('multer');
-const { Readable } = require('stream');
-const path = require('path');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('ffmpeg-static');
+const { ObjectId } = require("mongodb");
+const multer = require("multer");
+const { Readable } = require("stream");
+const path = require("path");
+const ffmpeg = require("fluent-ffmpeg");
+const ffmpegPath = require("ffmpeg-static");
 const config = require("../config/config");
 const User = require("../models/user");
 const { getSocketIo } = require("../config/notificationConfig");
@@ -344,10 +342,12 @@ async function updateCoordinate(req, res) {
     readableStream.push(mp3Buffer);
     readableStream.push(null);
 
-    const uploadStream = getBucket().openUploadStream(`audio_${Date.now()}.mp3`);
+    const uploadStream = getBucket().openUploadStream(
+      `audio_${Date.now()}.mp3`
+    );
     readableStream.pipe(uploadStream);
 
-    uploadStream.on('finish', async () => {
+    uploadStream.on("finish", async () => {
       recordId = uploadStream.id;
 
       try {
@@ -373,12 +373,12 @@ async function updateCoordinate(req, res) {
         const downloadStream = getBucket().openDownloadStream(recordId);
         let data = [];
 
-        downloadStream.on('data', (chunk) => {
+        downloadStream.on("data", (chunk) => {
           data.push(chunk);
         });
 
-        downloadStream.on('end', () => {
-          audioContent = Buffer.concat(data).toString('base64');
+        downloadStream.on("end", () => {
+          audioContent = Buffer.concat(data).toString("base64");
 
           io.emit("emergencyWeb", {
             id: updateCoordinateUser._id,
@@ -396,22 +396,24 @@ async function updateCoordinate(req, res) {
           });
         });
 
-        downloadStream.on('error', (error) => {
-          console.error('Error reading file:', error);
+        downloadStream.on("error", (error) => {
+          console.error("Error reading file:", error);
           res.status(500).json({
-            message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
+            message:
+              "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
           });
         });
       } catch (error) {
         console.error("Error updating coordinate:", error);
         res.status(500).json({
-          message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
+          message:
+            "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
         });
       }
     });
 
-    uploadStream.on('error', (error) => {
-      console.error('Error uploading file:', error);
+    uploadStream.on("error", (error) => {
+      console.error("Error uploading file:", error);
       res.status(500).json({
         message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
       });
@@ -461,23 +463,20 @@ async function updateCoordinate(req, res) {
 
 async function convertToMp3(buffer) {
   return new Promise((resolve, reject) => {
-    const chunks = [];
+    const outputFilePath = `output/audio_${Date.now()}.mp3`; // Define the output file path
     const stream = new Readable();
     stream.push(buffer);
     stream.push(null);
 
     ffmpeg(stream)
-      .toFormat('mp3')
-      .on('data', (chunk) => {
-        chunks.push(chunk);
+      .toFormat("mp3")
+      .on("end", () => {
+        resolve(outputFilePath); // Resolve with the output file path
       })
-      .on('end', () => {
-        resolve(Buffer.concat(chunks));
-      })
-      .on('error', (error) => {
+      .on("error", (error) => {
         reject(error);
       })
-      .run();
+      .save(outputFilePath); // Save the converted file to the specified output file path
   });
 }
 
@@ -486,36 +485,42 @@ async function getAllEmergency(req, res) {
     const users = await User.find({ statue: false });
 
     if (!users || users.length === 0) {
-      return res.status(404).json({ message: "Acil durum çağrısı yapan kullanıcı bulunamadı" });
+      return res
+        .status(404)
+        .json({ message: "Acil durum çağrısı yapan kullanıcı bulunamadı" });
     }
 
-    const usersWithRecordUrls = await Promise.all(users.map(async (user) => {
-      let audioContent = null;
-      if (user.record) {
-        const downloadStream = getBucket().openDownloadStream(new ObjectId(user.record));
-        let data = [];
+    const usersWithRecordUrls = await Promise.all(
+      users.map(async (user) => {
+        let audioContent = null;
+        if (user.record) {
+          const downloadStream = getBucket().openDownloadStream(
+            new ObjectId(user.record)
+          );
+          let data = [];
 
-        await new Promise((resolve, reject) => {
-          downloadStream.on('data', (chunk) => {
-            data.push(chunk);
+          await new Promise((resolve, reject) => {
+            downloadStream.on("data", (chunk) => {
+              data.push(chunk);
+            });
+
+            downloadStream.on("end", () => {
+              audioContent = Buffer.concat(data).toString("base64");
+              resolve();
+            });
+
+            downloadStream.on("error", (error) => {
+              reject(error);
+            });
           });
+        }
 
-          downloadStream.on('end', () => {
-            audioContent = Buffer.concat(data).toString('base64');
-            resolve();
-          });
-
-          downloadStream.on('error', (error) => {
-            reject(error);
-          });
-        });
-      }
-
-      return {
-        ...user._doc,
-        record: audioContent,
-      };
-    }));
+        return {
+          ...user._doc,
+          record: audioContent,
+        };
+      })
+    );
 
     res.status(200).json({
       message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
@@ -524,7 +529,8 @@ async function getAllEmergency(req, res) {
   } catch (error) {
     console.error("Error fetching emergency users:", error);
     res.status(500).json({
-      message: "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
+      message:
+        "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
     });
   }
 }

@@ -112,7 +112,7 @@ export default function EmergencyModal({
       );
       console.error(
         "Hata: ",
-        error.response ? error.response.data : error.message
+        error
       );
       setLoading(false);
     }

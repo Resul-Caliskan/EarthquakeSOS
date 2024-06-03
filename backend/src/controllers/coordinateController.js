@@ -122,6 +122,7 @@
 const { ObjectId } = require('mongodb');
 const multer = require('multer');
 const { Readable } = require('stream');
+const path = require('path');
 const config = require("../config/config");
 const User = require("../models/user");
 const { getSocketIo } = require("../config/notificationConfig");
@@ -266,7 +267,7 @@ async function getAllEmergency(req, res) {
     const usersWithRecordUrls = await Promise.all(users.map(async (user) => {
       let audioContent = null;
       if (user.record) {
-        const downloadStream = getBucket().openDownloadStream(ObjectId(user.record));
+        const downloadStream = getBucket().openDownloadStream(new ObjectId(user.record));
         let data = [];
 
         await new Promise((resolve, reject) => {

@@ -118,25 +118,14 @@
 //   uploadMiddleware: upload.single("record"),
 // };
 // controllers/coordinateController.js
-const { MongoClient, GridFSBucket, ObjectId } = require('mongodb');
+// src/controllers/coordinateController.js
+const { ObjectId } = require('mongodb');
 const multer = require('multer');
 const { Readable } = require('stream');
 const config = require("../config/config");
 const User = require("../models/user");
 const { getSocketIo } = require("../config/notificationConfig");
-
-const client = new MongoClient(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
-let bucket;
-
-client.connect(err => {
-  if (err) {
-    console.error('Failed to connect to MongoDB:', err);
-    process.exit(1);
-  }
-  const db = client.db(process.env.MONGODB_DB_NAME || 'ESOS');
-  bucket = new GridFSBucket(db, { bucketName: 'audioFiles' });
-  console.log('Connected to MongoDB');
-});
+const { getBucket } = require("../config/mongo");
 
 // Multer memory storage
 const storage = multer.memoryStorage();
@@ -151,7 +140,7 @@ async function updateCoordinate(req, res) {
     readableStream.push(req.file.buffer);
     readableStream.push(null);
 
-    const uploadStream = bucket.openUploadStream(`audio_${Date.now()}${path.extname(req.file.originalname)}`);
+    const uploadStream = getBucket().openUploadStream(`audio_${Date.now()}${path.extname(req.file.originalname)}`);
     readableStream.pipe(uploadStream);
 
     uploadStream.on('finish', async () => {
@@ -177,7 +166,7 @@ async function updateCoordinate(req, res) {
         const io = getSocketIo();
 
         let audioContent = null;
-        const downloadStream = bucket.openDownloadStream(recordId);
+        const downloadStream = getBucket().openDownloadStream(recordId);
         let data = [];
 
         downloadStream.on('data', (chunk) => {
@@ -277,7 +266,7 @@ async function getAllEmergency(req, res) {
     const usersWithRecordUrls = await Promise.all(users.map(async (user) => {
       let audioContent = null;
       if (user.record) {
-        const downloadStream = bucket.openDownloadStream(ObjectId(user.record));
+        const downloadStream = getBucket().openDownloadStream(ObjectId(user.record));
         let data = [];
 
         await new Promise((resolve, reject) => {

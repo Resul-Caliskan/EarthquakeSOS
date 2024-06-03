@@ -36,15 +36,15 @@
 // const PORT = process.env.PORT || 5000;
 // server.listen(PORT, () => {
 //   console.log(`Server running on port ${PORT}`);
-// });
-const express = require("express");
+// });const express = require("express");
+const http = require("http"); // Import http module
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const config = require("./src/config/config");
-const { connectToMongo, getBucket } = require("./src/config/mongo");
+const { connectToMongo } = require("./src/config/mongo");
 const CoordinateRoutes = require("./src/routes/coordinateRoutes");
 const AuthRoutes = require("./src/routes/authRoutes");
 const socketConfig = require("./src/config/notificationConfig");
@@ -57,7 +57,9 @@ if (!fs.existsSync(dataDir)) {
 }
 app.use("/datas", express.static(dataDir));
 
-socketConfig.initializeSocket(app);
+const server = http.createServer(app); // Create http server instance
+
+socketConfig.initializeSocket(server); // Pass http server instance to initializeSocket function
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -75,6 +77,6 @@ app.use("/api", AuthRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

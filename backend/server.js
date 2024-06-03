@@ -38,7 +38,7 @@
 //   console.log(`Server running on port ${PORT}`);
 // });
 const express = require("express");
-const http = require("http"); // Import http module
+const http = require("http");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -53,14 +53,20 @@ const notificationRoutes = require("./src/routes/notificationRoutes");
 
 const app = express();
 const dataDir = path.join(__dirname, "datas");
+
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir);
 }
+console.log(`Serving static files from ${dataDir}`);
 app.use("/datas", express.static(dataDir));
 
-const server = http.createServer(app); // Create http server instance
+// List files in datas directory
+const files = fs.readdirSync(dataDir);
+console.log("Files in datas directory:", files);
 
-socketConfig.initializeSocket(server); // Pass http server instance to initializeSocket function
+const server = http.createServer(app);
+
+socketConfig.initializeSocket(server);
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -69,7 +75,7 @@ mongoose
   .connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Connected to MongoDB");
-    connectToMongo(); // Connect to MongoDB and initialize GridFS bucket
+    connectToMongo();
   })
   .catch((err) => console.error("MongoDB connection error:", err));
 

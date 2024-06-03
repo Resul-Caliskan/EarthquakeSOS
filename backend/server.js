@@ -42,8 +42,6 @@ const http = require("http");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
 const config = require("./src/config/config");
 const { connectToMongo } = require("./src/config/mongo");
 const CoordinateRoutes = require("./src/routes/coordinateRoutes");
@@ -52,17 +50,6 @@ const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 
 const app = express();
-const dataDir = path.join(__dirname, "datas");
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir);
-}
-console.log(`Serving static files from ${dataDir}`);
-app.use("/datas", express.static(dataDir));
-
-// List files in datas directory
-const files = fs.readdirSync(dataDir);
-console.log("Files in datas directory:", files);
 
 const server = http.createServer(app);
 

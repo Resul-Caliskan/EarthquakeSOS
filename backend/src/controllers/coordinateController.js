@@ -117,30 +117,19 @@
 //   updateCoordinate,
 //   uploadMiddleware: upload.single("record"),
 // };
-
 const config = require("../config/config");
 const User = require("../models/user");
 const { userCache } = require("../config/userCache");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { getBucket } = require("../config/mongo");
 const { getSocketIo } = require("../config/notificationConfig");
 const ffmpeg = require("fluent-ffmpeg");
+const stream = require("stream");
+const path = require("path");
+const fs = require("fs");
 
-// Multer ayarları
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = path.join(__dirname, "../datas");
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, "audio_" + Date.now() + path.extname(file.originalname));
-  },
-});
-
+// Multer configuration
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Base URL for server
@@ -148,7 +137,7 @@ const BASE_URL = config.BASE_URL || "https://earthquakesos.onrender.com"; // Use
 
 async function updateCoordinate(req, res) {
   const { coordinate, id, message, date } = req.body;
-  const record = req.file ? req.file.filename : "";
+  const file = req.file;
 
   console.log("Coordinate:", coordinate);
   try {
@@ -157,7 +146,7 @@ async function updateCoordinate(req, res) {
       {
         coordinate: coordinate,
         message: message,
-        record: record,
+        record: file ? file.originalname : "",
         statue: false,
         createdAt: date,
       },
@@ -170,40 +159,66 @@ async function updateCoordinate(req, res) {
       });
     }
 
-    // Convert 3GP to MP3
-    const mp3FilePath = path.join(
-      __dirname,
-      `../datas/audio_${Date.now()}.mp3`
-    );
-    ffmpeg(req.file.path)
-      .toFormat("mp3")
-      .on("end", function () {
-        // Soket bağlantısını al
-        const io = getSocketIo();
+    // Upload the file to GridFS
+    const bucket = getBucket();
+    const uploadStream = bucket.openUploadStream(file.originalname, {
+      contentType: file.mimetype,
+    });
+    const readableStream = new stream.PassThrough();
+    readableStream.end(file.buffer);
 
-        // İstemcilere güncelleme mesajı gönder
-        io.emit("emergencyWeb", {
-          id: updateCoordinateUser._id,
-          name: updateCoordinateUser.name, // Kullanıcının adını kullanabilirsiniz
-          message: updateCoordinateUser.message,
-          time: updateCoordinateUser.createdAt,
-          audioUrl: `${BASE_URL}/datas/${path.basename(mp3FilePath)}`,
-          healthInfo: updateCoordinateUser.healthInfo,
-          coordinate: updateCoordinateUser.coordinate,
-        });
-
-        res.status(200).json({
-          message: "Koordinat Başarılı Bir Şekilde Alındı",
-          data: updateCoordinateUser,
-        });
-      })
-      .on("error", function (err) {
-        console.error("Error converting file:", err);
+    readableStream
+      .pipe(uploadStream)
+      .on("error", (err) => {
+        console.error("Error uploading file to GridFS:", err);
         res.status(500).json({
-          message: "Dosya dönüştürülürken bir hata oluştu",
+          message: "Dosya yüklenirken bir hata oluştu",
         });
       })
-      .save(mp3FilePath);
+      .on("finish", async () => {
+        console.log("File uploaded to GridFS successfully");
+
+        // Convert 3GP to MP3
+        const tempFilePath = `/tmp/audio_${Date.now()}.3gp`;
+        const mp3FilePath = `/tmp/audio_${Date.now()}.mp3`;
+
+        // Save the uploaded file to a temporary path for conversion
+        fs.writeFileSync(tempFilePath, file.buffer);
+
+        ffmpeg(tempFilePath)
+          .toFormat("mp3")
+          .on("end", function () {
+            // Soket bağlantısını al
+            const io = getSocketIo();
+
+            // İstemcilere güncelleme mesajı gönder
+            io.emit("emergencyWeb", {
+              id: updateCoordinateUser._id,
+              name: updateCoordinateUser.name, // Kullanıcının adını kullanabilirsiniz
+              message: updateCoordinateUser.message,
+              time: updateCoordinateUser.createdAt,
+              audioUrl: `${BASE_URL}/datas/${path.basename(mp3FilePath)}`,
+              healthInfo: updateCoordinateUser.healthInfo,
+              coordinate: updateCoordinateUser.coordinate,
+            });
+
+            // Clean up temporary files
+            fs.unlinkSync(tempFilePath);
+            fs.unlinkSync(mp3FilePath);
+
+            res.status(200).json({
+              message: "Koordinat Başarılı Bir Şekilde Alındı",
+              data: updateCoordinateUser,
+            });
+          })
+          .on("error", function (err) {
+            console.error("Error converting file:", err);
+            res.status(500).json({
+              message: "Dosya dönüştürülürken bir hata oluştu",
+            });
+          })
+          .save(mp3FilePath);
+      });
   } catch (error) {
     console.error("Error updating coordinate:", error);
     res.status(500).json({

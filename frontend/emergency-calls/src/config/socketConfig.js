@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 
 // Sunucu URL'sini burada belirtiyoruz.
-const SOCKET_URL = "http://localhost:5000"; // Bu URL'yi kendi sunucu URL'niz ile değiştirin
+const SOCKET_URL = "https://earthquakesos.onrender.com"; // Bu URL'yi kendi sunucu URL'niz ile değiştirin
 
 // Socket bağlantısını oluşturuyoruz
 const socket = io(SOCKET_URL, {

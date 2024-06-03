@@ -17,6 +17,9 @@ import MapComponent from "./components/MapComponent";
 import getLocation from "../../utils/getLocation";
 import { FontAwesome } from "@expo/vector-icons";
 import EmergencyModal from "./components/modalEmergency";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import notificationsConfig from "../../config/notificationsConfig";
+import { scheduleNotification } from "../../utilities/pushNotifications";
 import { useRoute } from "@react-navigation/native";
 
 export default function Home({ navigation }) {
@@ -24,8 +27,8 @@ export default function Home({ navigation }) {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [emergencyModal, setEmergencyModal] = useState(false);
   const route = useRoute();
-  console.log("paarmas:",route.params);
-  const { location,id } = route.params;
+  console.log("paarmas:", route.params);
+  const { location, id } = route.params;
   console.log("home location:", location);
   console.log("id geldi mi Kardeş:", id);
   const [nearbyPeople, setNearbyPeople] = useState([
@@ -36,19 +39,41 @@ export default function Home({ navigation }) {
   const [emergencyMessage, setEmergencyMessage] = useState("Acil Yardım");
   const [audioRecorded, setAudioRecorded] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const { latitude, longitude } = await getLocation();
-  //       setLocation({ latitude, longitude });
-  //       console.log("location", latitude, longitude);
-  //     } catch (error) {
-  //       console.error("Hata:", error);
-  //     }
-  //   };
+  useEffect(() => {
+    const onNotificationConnect = () => {
+      console.log("Bağladım");
+    };
 
-  //   fetchData();
-  // }, []);
+    const onNotificationReceived = async (res) => {
+      console.log("Girdi");
+
+      try {
+        const currentDate = new Date().toISOString();
+        await scheduleNotification(res.message);
+        const { latitude, longitude } = await getLocation();
+        const response = await axios.put(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
+          {
+            id: id,
+            coordinate: JSON.stringify([latitude, longitude]),
+            date: currentDate,
+            message:
+              "Deprem Oldu! Kişi Konumu Bilgisi Sistem tarafından Paylaşıldı",
+          }
+        );
+      } catch (error) {
+        console.error("Hata: " + error);
+      }
+    };
+
+    notificationsConfig.on("connect", onNotificationConnect);
+    notificationsConfig.on("notification", onNotificationReceived);
+
+    return () => {
+      notificationsConfig.off("connect", onNotificationConnect);
+      notificationsConfig.off("notification", onNotificationReceived);
+    };
+  }, []);
 
   const handleSafeButtonClick = () => {
     setConfirmModalVisible(true);
@@ -102,6 +127,7 @@ export default function Home({ navigation }) {
       </View>
       <EmergencyModal
         visible={emergencyModal}
+        id={id}
         closeModal={() => setEmergencyModal(false)}
       />
       <Modal

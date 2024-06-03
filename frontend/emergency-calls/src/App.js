@@ -3,6 +3,7 @@ import "./App.css";
 import ListComponent from "./components/listComponent";
 import "leaflet/dist/leaflet.css";
 import socket from "./config/socketConfig";
+import CallsMap from "./components/callsMap";
 function App() {
   const [selectedOption, setSelectedOption] = useState("emergency");
 
@@ -78,7 +79,7 @@ function App() {
       </div>
       <div className="h-full p-2">
         {selectedOption === "emergency" && <ListComponent />}
-        {selectedOption === "map" && <div>Sayfa</div>}
+        {selectedOption === "map" && <CallsMap />}
       </div>
     </div>
   );

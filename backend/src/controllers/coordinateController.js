@@ -127,7 +127,7 @@ const ffmpeg = require("fluent-ffmpeg");
 const stream = require("stream");
 const path = require("path");
 const fs = require("fs");
-
+const { Readable } = require("stream");
 // Multer configuration
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -229,38 +229,56 @@ async function updateCoordinate(req, res) {
 
 async function getAllEmergency(req, res) {
   try {
-    // Statue değeri false olan tüm kullanıcıları çek
+    // Fetch users with statue set to false
     const users = await User.find({ statue: false });
 
-    // Kullanıcılar bulunamazsa
     if (!users || users.length === 0) {
       return res.status(404).json({
         message: "Acil durum çağrısı yapan kullanıcı bulunamadı",
       });
     }
 
-    // Kullanıcılar bulunduysa, her kullanıcı için record URL'sini oluştur
-    const usersWithRecordUrls = users.map((user) => {
+    // Fetch audio files from GridFS and convert them to base64
+    const usersWithRecordUrls = await Promise.all(users.map(async (user) => {
+      let base64Audio = null;
+
+      if (user.record) {
+        const bucket = getBucket();
+        const downloadStream = bucket.openDownloadStreamByName(user.record);
+
+        const chunks = [];
+        for await (const chunk of downloadStream) {
+          chunks.push(chunk);
+        }
+        
+        const buffer = Buffer.concat(chunks);
+        base64Audio = buffer.toString("base64");
+      }
+
       return {
         ...user._doc,
-        recordUrl: user.record ? `${BASE_URL}/datas/${user.record}` : null,
+        recordUrl: base64Audio ? `data:audio/mp3;base64,${base64Audio}` : null,
       };
-    });
+    }));
 
-    // Kullanıcı bilgilerini döndür
+    // Return the user data with audio files as base64
     res.status(200).json({
       message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
       data: usersWithRecordUrls,
     });
   } catch (error) {
-    // Hata durumunda logla ve hata mesajını döndür
     console.error("Error fetching emergency users:", error);
     res.status(500).json({
-      message:
-        "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
+      message: "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
     });
   }
 }
+
+module.exports = {
+  getAllEmergency,
+  updateCoordinate,
+  uploadMiddleware: upload.single("record"),
+};
 
 module.exports = {
   getAllEmergency,

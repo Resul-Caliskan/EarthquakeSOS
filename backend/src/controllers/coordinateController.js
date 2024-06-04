@@ -58,6 +58,8 @@ async function updateCoordinate(req, res) {
 
       // Soket bağlantısını al
       const io = getSocketIo();
+      const base64Audio = mp3Buffer.toString("base64");
+      const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
 
       // İstemcilere güncelleme mesajı gönder
       io.emit("emergencyWeb", {
@@ -65,7 +67,7 @@ async function updateCoordinate(req, res) {
         name: updateCoordinateUser.name,
         message: updateCoordinateUser.message,
         time: updateCoordinateUser.createdAt,
-        audioUrl: mp3Buffer,
+        audioUrl: audioUrl,
         healthInfo: updateCoordinateUser.healthInfo,
         coordinate: updateCoordinateUser.coordinate,
       });

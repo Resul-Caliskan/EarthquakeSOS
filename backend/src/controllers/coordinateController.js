@@ -99,7 +99,6 @@ async function updateCoordinate(req, res) {
 
 async function getAllEmergency(req, res) {
   try {
-    // Fetch users with statue set to false
     const users = await User.find({ statue: false });
 
     if (!users || users.length === 0) {
@@ -108,22 +107,12 @@ async function getAllEmergency(req, res) {
       });
     }
 
-    // Fetch audio files from GridFS and convert them to base64
     const usersWithRecordUrls = await Promise.all(
       users.map(async (user) => {
         let base64Audio = null;
 
         if (user.record) {
-          const bucket = getBucket();
-          const downloadStream = bucket.openDownloadStreamByName(user.record);
-
-          const chunks = [];
-          for await (const chunk of downloadStream) {
-            chunks.push(chunk);
-          }
-
-          const buffer = Buffer.concat(chunks);
-          base64Audio = buffer.toString("base64");
+          base64Audio = user.record.toString("base64");
         }
 
         return {
@@ -135,7 +124,6 @@ async function getAllEmergency(req, res) {
       })
     );
 
-    // Return the user data with audio files as base64
     res.status(200).json({
       message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
       data: usersWithRecordUrls,
@@ -154,7 +142,6 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.single("record"),
 };
-
 
 // const config = require("../config/config");
 // const User = require("../models/user");

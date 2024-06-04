@@ -1,11 +1,9 @@
 const config = require("../config/config");
 const User = require("../models/user");
-const { getBucket } = require("../config/mongo");
 const { getSocketIo } = require("../config/notificationConfig");
 const multer = require("multer");
-const path = require("path");
-const ffmpeg = require("fluent-ffmpeg");
 const stream = require("stream");
+const ffmpeg = require("fluent-ffmpeg");
 const { v4: uuidv4 } = require("uuid");
 
 // Configure multer to store files in memory
@@ -19,13 +17,13 @@ async function updateCoordinate(req, res) {
   const file = req.file;
 
   console.log("Coordinate:", coordinate);
-  try {
-    if (!file) {
-      return res.status(400).json({
-        message: "Dosya yüklenmedi",
-      });
-    }
+  if (!file) {
+    return res.status(400).json({
+      message: "Dosya yüklenmedi",
+    });
+  }
 
+  try {
     // Convert 3GP to MP3 in memory
     const inputStream = new stream.PassThrough();
     inputStream.end(file.buffer);
@@ -34,49 +32,58 @@ async function updateCoordinate(req, res) {
     const buffers = [];
     outputStream.on("data", (chunk) => buffers.push(chunk));
     outputStream.on("end", async () => {
-      const mp3Buffer = Buffer.concat(buffers);
+      try {
+        const mp3Buffer = Buffer.concat(buffers);
 
-      // Update the user's record field directly
-      const updateCoordinateUser = await User.findByIdAndUpdate(
-        id,
-        {
-          coordinate: coordinate,
-          message: message,
-          record: mp3Buffer, // Directly save the MP3 buffer
-          statue: false,
-          createdAt: date,
-        },
-        { new: true }
-      );
+        // Update the user's record field directly
+        const updateCoordinateUser = await User.findByIdAndUpdate(
+          id,
+          {
+            coordinate: coordinate,
+            message: message,
+            record: mp3Buffer, // Directly save the MP3 buffer
+            statue: false,
+            createdAt: date,
+          },
+          { new: true }
+        );
 
-      if (!updateCoordinateUser) {
-        return res.status(404).json({
-          message: "Kullanıcı bulunamadı",
+        if (!updateCoordinateUser) {
+          return res.status(404).json({
+            message: "Kullanıcı bulunamadı",
+          });
+        }
+
+        // Convert mp3Buffer to Base64 URL
+        const base64Audio = mp3Buffer.toString("base64");
+        const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
+
+        // Soket bağlantısını al
+        const io = getSocketIo();
+
+        // İstemcilere güncelleme mesajı gönder
+        io.emit("emergencyWeb", {
+          id: updateCoordinateUser._id,
+          name: updateCoordinateUser.name,
+          message: updateCoordinateUser.message,
+          time: updateCoordinateUser.createdAt,
+          audioUrl: audioUrl, // Send as Base64 URL
+          healthInfo: updateCoordinateUser.healthInfo,
+          coordinate: updateCoordinateUser.coordinate,
         });
+
+        res.status(200).json({
+          message: "Koordinat Başarılı Bir Şekilde Alındı",
+          data: updateCoordinateUser,
+        });
+      } catch (updateError) {
+        console.error("Error updating coordinate:", updateError);
+        if (!res.headersSent) {
+          res.status(500).json({
+            message: "Koordinat güncellenirken bir hata oluştu",
+          });
+        }
       }
-
-      // Convert mp3Buffer to Base64 URL
-      const base64Audio = mp3Buffer.toString("base64");
-      const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
-
-      // Soket bağlantısını al
-      const io = getSocketIo();
-
-      // İstemcilere güncelleme mesajı gönder
-      io.emit("emergencyWeb", {
-        id: updateCoordinateUser._id,
-        name: updateCoordinateUser.name,
-        message: updateCoordinateUser.message,
-        time: updateCoordinateUser.createdAt,
-        audioUrl: audioUrl, // Send as Base64 URL
-        healthInfo: updateCoordinateUser.healthInfo,
-        coordinate: updateCoordinateUser.coordinate,
-      });
-
-      res.status(200).json({
-        message: "Koordinat Başarılı Bir Şekilde Alındı",
-        data: updateCoordinateUser,
-      });
     });
 
     ffmpeg(inputStream)
@@ -91,7 +98,7 @@ async function updateCoordinate(req, res) {
       })
       .pipe(outputStream);
   } catch (error) {
-    console.error("Error updating coordinate:", error);
+    console.error("Error processing request:", error);
     if (!res.headersSent) {
       res.status(500).json({
         message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
@@ -145,6 +152,7 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.single("record"),
 };
+
 
 // const config = require("../config/config");
 // const User = require("../models/user");

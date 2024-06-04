@@ -80,16 +80,20 @@ async function updateCoordinate(req, res) {
       .toFormat("mp3")
       .on("error", (err) => {
         console.error("Error converting file:", err);
-        res.status(500).json({
-          message: "Dosya dönüştürülürken bir hata oluştu",
-        });
+        if (!res.headersSent) {
+          res.status(500).json({
+            message: "Dosya dönüştürülürken bir hata oluştu",
+          });
+        }
       })
       .pipe(outputStream);
   } catch (error) {
     console.error("Error updating coordinate:", error);
-    res.status(500).json({
-      message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
-    });
+    if (!res.headersSent) {
+      res.status(500).json({
+        message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
+      });
+    }
   }
 }
 
@@ -150,6 +154,7 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.single("record"),
 };
+
 
 // const config = require("../config/config");
 // const User = require("../models/user");

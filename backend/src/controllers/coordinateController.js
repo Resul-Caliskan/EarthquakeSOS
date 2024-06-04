@@ -257,7 +257,9 @@ async function updateCoordinate(req, res) {
         console.log("Conversion started");
       })
       .on("progress", (progress) => {
-        console.log(`Processing: ${progress.percent}% done`);
+        if (progress.percent) {
+          console.log(`Processing: ${progress.percent}% done`);
+        }
       })
       .on("error", (err) => {
         console.error("Error converting file:", err);
@@ -271,7 +273,7 @@ async function updateCoordinate(req, res) {
         console.log("Conversion finished");
         outputStream.end();
       })
-      .pipe(outputStream);
+      .pipe(outputStream, { end: true }); // Ensure the output stream is ended properly
   } catch (error) {
     console.error("Error processing request:", error);
     if (!res.headersSent) {
@@ -330,6 +332,7 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.fields([{ name: 'record', maxCount: 1 }, { name: 'image', maxCount: 1 }]),
 };
+
 
 
 

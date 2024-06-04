@@ -231,11 +231,7 @@ import axios from "axios"; // Import axios for making HTTP requests
 import getLocation from "../../../utils/getLocation";
 import { showToast } from "../../../utils/toastMessage";
 
-export default function EmergencyModal({
-  visible,
-  id,
-  closeModal,
-}) {
+export default function EmergencyModal({ visible, id, closeModal }) {
   const [recording, setRecording] = useState();
   const [audioPath, setAudioPath] = useState("");
   const [emergencyMessage, setEmergencyMessage] = useState("");
@@ -289,21 +285,21 @@ export default function EmergencyModal({
   const pickImage = async () => {
     // Ask for permission to access the camera
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera permissions to make this work!');
+    if (status !== "granted") {
+      alert("Sorry, we need camera permissions to make this work!");
       return;
     }
-    
+
     // Launch the camera
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!result.canceled) {
-      setImage(result.uri);
+      setImage(result.assets[0].uri);
+
     }
   };
 
@@ -406,7 +402,13 @@ export default function EmergencyModal({
             }}
             onChangeText={(text) => setEmergencyMessage(text)}
           />
-          <View style={{ flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
             <TouchableOpacity
               style={{
                 marginBottom: 5,

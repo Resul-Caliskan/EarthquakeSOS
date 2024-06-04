@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema({
   coordinate: [{ type: String }],
   statue: { type: Boolean },
   message: { type: String },
-  record: { type: String },
-  image: { type: String },
+  record: { type: Buffer },
+  image: { type: Buffer },
   createdAt: { type: Date },
 });
 

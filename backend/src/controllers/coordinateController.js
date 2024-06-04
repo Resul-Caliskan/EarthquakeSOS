@@ -253,6 +253,12 @@ async function updateCoordinate(req, res) {
 
     ffmpeg(inputStream)
       .toFormat("mp3")
+      .on("start", () => {
+        console.log("Conversion started");
+      })
+      .on("progress", (progress) => {
+        console.log(`Processing: ${progress.percent}% done`);
+      })
       .on("error", (err) => {
         console.error("Error converting file:", err);
         if (!res.headersSent) {
@@ -260,6 +266,10 @@ async function updateCoordinate(req, res) {
             message: "Dosya dönüştürülürken bir hata oluştu",
           });
         }
+      })
+      .on("end", () => {
+        console.log("Conversion finished");
+        outputStream.end();
       })
       .pipe(outputStream);
   } catch (error) {
@@ -320,6 +330,7 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.fields([{ name: 'record', maxCount: 1 }, { name: 'image', maxCount: 1 }]),
 };
+
 
 
 // const config = require("../config/config");

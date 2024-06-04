@@ -6,7 +6,6 @@ const multer = require("multer");
 const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
 const stream = require("stream");
-const { Readable } = require("stream");
 const { v4: uuidv4 } = require("uuid");
 
 // Configure multer to store files in memory
@@ -56,10 +55,12 @@ async function updateCoordinate(req, res) {
         });
       }
 
-      // Soket bağlantısını al
-      const io = getSocketIo();
+      // Convert mp3Buffer to Base64 URL
       const base64Audio = mp3Buffer.toString("base64");
       const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
+
+      // Soket bağlantısını al
+      const io = getSocketIo();
 
       // İstemcilere güncelleme mesajı gönder
       io.emit("emergencyWeb", {
@@ -67,7 +68,7 @@ async function updateCoordinate(req, res) {
         name: updateCoordinateUser.name,
         message: updateCoordinateUser.message,
         time: updateCoordinateUser.createdAt,
-        audioUrl: audioUrl,
+        audioUrl: audioUrl, // Send as Base64 URL
         healthInfo: updateCoordinateUser.healthInfo,
         coordinate: updateCoordinateUser.coordinate,
       });

@@ -1,3 +1,159 @@
+// const config = require("../config/config");
+// const User = require("../models/user");
+// const { getSocketIo } = require("../config/notificationConfig");
+// const multer = require("multer");
+// const stream = require("stream");
+// const ffmpeg = require("fluent-ffmpeg");
+// const { v4: uuidv4 } = require("uuid");
+
+// // Configure multer to store files in memory
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+// const BASE_URL = config.BASE_URL || "https://earthquakesos.onrender.com";
+
+// async function updateCoordinate(req, res) {
+//   const { coordinate, id, message, date } = req.body;
+//   const file = req.file;
+
+//   console.log("Coordinate:", coordinate);
+//   if (!file) {
+//     return res.status(400).json({
+//       message: "Dosya yüklenmedi",
+//     });
+//   }
+
+//   try {
+//     // Convert 3GP to MP3 in memory
+//     const inputStream = new stream.PassThrough();
+//     inputStream.end(file.buffer);
+
+//     const outputStream = new stream.PassThrough();
+//     const buffers = [];
+//     outputStream.on("data", (chunk) => buffers.push(chunk));
+//     outputStream.on("end", async () => {
+//       try {
+//         const mp3Buffer = Buffer.concat(buffers);
+
+//         // Update the user's record field directly
+//         const updateCoordinateUser = await User.findByIdAndUpdate(
+//           id,
+//           {
+//             coordinate: coordinate,
+//             message: message,
+//             record: mp3Buffer, // Directly save the MP3 buffer
+//             statue: false,
+//             createdAt: date,
+//           },
+//           { new: true }
+//         );
+
+//         if (!updateCoordinateUser) {
+//           return res.status(404).json({
+//             message: "Kullanıcı bulunamadı",
+//           });
+//         }
+
+//         // Convert mp3Buffer to Base64 URL
+//         const base64Audio = mp3Buffer.toString("base64");
+//         const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
+
+//         // Soket bağlantısını al
+//         const io = getSocketIo();
+
+//         // İstemcilere güncelleme mesajı gönder
+//         io.emit("emergencyWeb", {
+//           id: updateCoordinateUser._id,
+//           name: updateCoordinateUser.name,
+//           message: updateCoordinateUser.message,
+//           time: updateCoordinateUser.createdAt,
+//           audioUrl: audioUrl, // Send as Base64 URL
+//           healthInfo: updateCoordinateUser.healthInfo,
+//           coordinate: updateCoordinateUser.coordinate,
+//         });
+
+//         res.status(200).json({
+//           message: "Koordinat Başarılı Bir Şekilde Alındı",
+//           data: updateCoordinateUser,
+//         });
+//       } catch (updateError) {
+//         console.error("Error updating coordinate:", updateError);
+//         if (!res.headersSent) {
+//           res.status(500).json({
+//             message: "Koordinat güncellenirken bir hata oluştu",
+//           });
+//         }
+//       }
+//     });
+
+//     ffmpeg(inputStream)
+//       .toFormat("mp3")
+//       .on("error", (err) => {
+//         console.error("Error converting file:", err);
+//         if (!res.headersSent) {
+//           res.status(500).json({
+//             message: "Dosya dönüştürülürken bir hata oluştu",
+//           });
+//         }
+//       })
+//       .pipe(outputStream);
+//   } catch (error) {
+//     console.error("Error processing request:", error);
+//     if (!res.headersSent) {
+//       res.status(500).json({
+//         message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
+//       });
+//     }
+//   }
+// }
+
+// async function getAllEmergency(req, res) {
+//   try {
+//     const users = await User.find({ statue: false });
+
+//     if (!users || users.length === 0) {
+//       return res.status(404).json({
+//         message: "Acil durum çağrısı yapan kullanıcı bulunamadı",
+//       });
+//     }
+
+//     const usersWithRecordUrls = await Promise.all(
+//       users.map(async (user) => {
+//         let base64Audio = null;
+
+//         if (user.record) {
+//           base64Audio = user.record.toString("base64");
+//         }
+
+//         return {
+//           ...user._doc,
+//           recordUrl: base64Audio
+//             ? `data:audio/mp3;base64,${base64Audio}`
+//             : null,
+//         };
+//       })
+//     );
+
+//     res.status(200).json({
+//       message: "Acil durum çağrısı yapan kullanıcılar başarıyla alındı",
+//       data: usersWithRecordUrls,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching emergency users:", error);
+//     res.status(500).json({
+//       message:
+//         "Acil durum çağrısı yapan kullanıcılar alınırken bir hata oluştu",
+//     });
+//   }
+// }
+
+// module.exports = {
+//   updateCoordinate,
+//   getAllEmergency,
+//   uploadMiddleware: upload.single("record"),
+// };
+
+
 const config = require("../config/config");
 const User = require("../models/user");
 const { getSocketIo } = require("../config/notificationConfig");
@@ -14,19 +170,20 @@ const BASE_URL = config.BASE_URL || "https://earthquakesos.onrender.com";
 
 async function updateCoordinate(req, res) {
   const { coordinate, id, message, date } = req.body;
-  const file = req.file;
+  const recordFile = req.files['record'] ? req.files['record'][0] : null;
+  const imageFile = req.files['image'] ? req.files['image'][0] : null;
 
   console.log("Coordinate:", coordinate);
-  if (!file) {
+  if (!recordFile) {
     return res.status(400).json({
-      message: "Dosya yüklenmedi",
+      message: "Ses dosyası yüklenmedi",
     });
   }
 
   try {
     // Convert 3GP to MP3 in memory
     const inputStream = new stream.PassThrough();
-    inputStream.end(file.buffer);
+    inputStream.end(recordFile.buffer);
 
     const outputStream = new stream.PassThrough();
     const buffers = [];
@@ -35,6 +192,12 @@ async function updateCoordinate(req, res) {
       try {
         const mp3Buffer = Buffer.concat(buffers);
 
+        // Process image file if exists
+        let base64Image = null;
+        if (imageFile) {
+          base64Image = imageFile.buffer.toString('base64');
+        }
+
         // Update the user's record field directly
         const updateCoordinateUser = await User.findByIdAndUpdate(
           id,
@@ -42,6 +205,7 @@ async function updateCoordinate(req, res) {
             coordinate: coordinate,
             message: message,
             record: mp3Buffer, // Directly save the MP3 buffer
+            image: base64Image, // Save the image as Base64 string
             statue: false,
             createdAt: date,
           },
@@ -68,6 +232,7 @@ async function updateCoordinate(req, res) {
           message: updateCoordinateUser.message,
           time: updateCoordinateUser.createdAt,
           audioUrl: audioUrl, // Send as Base64 URL
+          imageUrl: base64Image ? `data:image/jpeg;base64,${base64Image}` : null,
           healthInfo: updateCoordinateUser.healthInfo,
           coordinate: updateCoordinateUser.coordinate,
         });
@@ -120,16 +285,19 @@ async function getAllEmergency(req, res) {
     const usersWithRecordUrls = await Promise.all(
       users.map(async (user) => {
         let base64Audio = null;
+        let base64Image = null;
 
         if (user.record) {
           base64Audio = user.record.toString("base64");
         }
+        if (user.image) {
+          base64Image = user.image;
+        }
 
         return {
           ...user._doc,
-          recordUrl: base64Audio
-            ? `data:audio/mp3;base64,${base64Audio}`
-            : null,
+          recordUrl: base64Audio ? `data:audio/mp3;base64,${base64Audio}` : null,
+          imageUrl: base64Image ? `data:image/jpeg;base64,${base64Image}` : null,
         };
       })
     );
@@ -150,7 +318,7 @@ async function getAllEmergency(req, res) {
 module.exports = {
   updateCoordinate,
   getAllEmergency,
-  uploadMiddleware: upload.single("record"),
+  uploadMiddleware: upload.fields([{ name: 'record', maxCount: 1 }, { name: 'image', maxCount: 1 }]),
 };
 
 

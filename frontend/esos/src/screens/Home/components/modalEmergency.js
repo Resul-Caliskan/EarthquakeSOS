@@ -308,10 +308,10 @@ export default function EmergencyModal({ visible, id, closeModal }) {
     try {
       const { latitude, longitude } = await getLocation();
       console.log("Latitude:", latitude, "Longitude:", longitude);
-
+  
       // Get current date
       const currentDate = new Date().toISOString();
-
+  
       // Create FormData object to send data including file
       const formData = new FormData();
       console.log("form id:", id);
@@ -334,7 +334,7 @@ export default function EmergencyModal({ visible, id, closeModal }) {
         });
       }
       formData.append("date", currentDate); // Append current date
-
+  
       const response = await axios.put(
         `${process.env.EXPO_PUBLIC_API_URL}/api/coordinate/send-my-coordinate`,
         formData,
@@ -344,19 +344,21 @@ export default function EmergencyModal({ visible, id, closeModal }) {
           },
         }
       );
-      console.log("Cevap: ", response.data.data);
+  
       if (response.status === 200) {
+        console.log("Cevap: ", response.data.data);
         showToast("Acil Yardım Talebi Başarıyla Gönderildi");
-        setLoading(false); // Gönderme işlemi tamamlandığında loading durumunu false olarak güncelle
+      } else {
+        showToast("Acil Yardım Talebi Gönderilemedi");
       }
     } catch (error) {
-      showToast(
-        "HATA! Acil yardım talebi gönderilirken bir hata oluştu lütfen tekrar deneyiniz."
-      );
       console.error("Hata: ", error);
-      setLoading(false);
+      showToast("HATA! Acil yardım talebi gönderilirken bir hata oluştu lütfen tekrar deneyiniz.");
+    } finally {
+      setLoading(false); // Loading state should be updated in both success and error cases
     }
   };
+  
 
   return (
     <Modal

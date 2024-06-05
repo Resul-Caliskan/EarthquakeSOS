@@ -295,7 +295,7 @@ export default function EmergencyModal({ visible, id, closeModal }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.1,
     });
     if (!result.canceled) {
       setImage(result.assets[0].uri);

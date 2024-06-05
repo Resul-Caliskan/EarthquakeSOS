@@ -187,6 +187,7 @@ async function updateCoordinate(req, res) {
 
     const outputStream = new stream.PassThrough();
     const buffers = [];
+
     outputStream.on("data", (chunk) => buffers.push(chunk));
     outputStream.on("end", async () => {
       try {
@@ -268,6 +269,7 @@ async function updateCoordinate(req, res) {
             message: "Dosya dönüştürülürken bir hata oluştu",
           });
         }
+        outputStream.end(); // Ensure the output stream is closed on error
       })
       .on("end", () => {
         console.log("Conversion finished");
@@ -332,6 +334,7 @@ module.exports = {
   getAllEmergency,
   uploadMiddleware: upload.fields([{ name: 'record', maxCount: 1 }, { name: 'image', maxCount: 1 }]),
 };
+
 
 
 

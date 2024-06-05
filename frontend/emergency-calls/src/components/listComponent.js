@@ -76,6 +76,10 @@ function Row(props) {
     setSelectedTab(newValue);
   };
 
+  useEffect(() => {
+    console.log("Row updated", row.audioUrl); // Debugging log
+  }, [row]);
+
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
@@ -95,7 +99,7 @@ function Row(props) {
         <TableCell>{new Date(row.time).toLocaleString()}</TableCell>
         <TableCell>
           {row.audioUrl && (
-            <audio controls>
+            <audio key={row.audioUrl} controls>
               <source src={row.audioUrl} type="audio/mp3" />
               Your browser does not support the audio element.
             </audio>
@@ -107,71 +111,74 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <div className="grid grid-cols-2">
-                <div className="justify-center items-center" >
-                <Typography
-                variant="h6"
-                gutterBottom
-                component="div"
-                style={{ fontWeight: "bold" }}
-              >
-                Detaylar
-              </Typography>
-              <Typography style={{marginBottom:10}}>Mesaj: {row.description}</Typography>
-              <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
-                Sağlık Bilgileri:
-              </Typography>
-              <Typography>
-                Alerjiler: {row.healthInfo.alerjiler.join(", ") || "Yok"}
-              </Typography>
-              <Typography>
-                İlaçlar: {row.healthInfo.ilaclar.join(", ") || "Yok"}
-              </Typography>
-              <Typography>
-                Kronik Hastalıklar:{" "}
-                {row.healthInfo.kronikHastaliklar.join(", ") || "Yok"}
-              </Typography>
+                <div className="justify-center items-center">
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    component="div"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Detaylar
+                  </Typography>
+                  <Typography style={{ marginBottom: 10 }}>
+                    Mesaj: {row.description}
+                  </Typography>
+                  <Typography
+                    variant="subtitle1"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Sağlık Bilgileri:
+                  </Typography>
+                  <Typography>
+                    Alerjiler: {row.healthInfo.alerjiler.join(", ") || "Yok"}
+                  </Typography>
+                  <Typography>
+                    İlaçlar: {row.healthInfo.ilaclar.join(", ") || "Yok"}
+                  </Typography>
+                  <Typography>
+                    Kronik Hastalıklar:{" "}
+                    {row.healthInfo.kronikHastaliklar.join(", ") || "Yok"}
+                  </Typography>
                 </div>
                 <div>
-                <Tabs value={selectedTab} onChange={handleChangeTab}>
-                <Tab label="Konum" />
-                <Tab label="Resim" />
-              </Tabs>
+                  <Tabs value={selectedTab} onChange={handleChangeTab}>
+                    <Tab label="Konum" />
+                    <Tab label="Resim" />
+                  </Tabs>
 
-              {selectedTab === 1 && row.imageUrl && (
-                <img
-                  src={row.imageUrl}
-                  alt="Emergency"
-                  style={{ width: "20%", marginTop: "10px" }}
-                />
-              )}
+                  {selectedTab === 1 && row.imageUrl && (
+                    <img
+                      src={row.imageUrl}
+                      alt="Emergency"
+                      style={{ width: "20%", marginTop: "10px" }}
+                    />
+                  )}
 
-              {selectedTab === 0 &&
-                row.coordinate &&
-                row.coordinate.length === 2 && (
-                  <MapContainer
-                    style={{
-                      height: "200px",
-                      width: "75%",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginTop: "10px",
-                    }}
-                    center={[row.coordinate[0], row.coordinate[1]]}
-                    zoom={13}
-                  >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <Marker
-                      position={[row.coordinate[0], row.coordinate[1]]}
-                      icon={customIcon}
-                    >
-                      <Popup>{row.title}</Popup>
-                    </Marker>
-                  </MapContainer>
-                )}
+                  {selectedTab === 0 &&
+                    row.coordinate &&
+                    row.coordinate.length === 2 && (
+                      <MapContainer
+                        style={{
+                          height: "200px",
+                          width: "75%",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginTop: "10px",
+                        }}
+                        center={[row.coordinate[0], row.coordinate[1]]}
+                        zoom={13}
+                      >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <Marker
+                          position={[row.coordinate[0], row.coordinate[1]]}
+                          icon={customIcon}
+                        >
+                          <Popup>{row.title}</Popup>
+                        </Marker>
+                      </MapContainer>
+                    )}
                 </div>
               </div>
-
-              
             </Box>
           </Collapse>
         </TableCell>
@@ -223,7 +230,7 @@ export default function ListComponent() {
               .replace("]", "")
               .split(",")
               .map((coord) => parseFloat(coord.trim()));
-            console.log("Recor url:",item.recordUrl);
+
             return createData(
               item._id,
               item.name,

@@ -21,5 +21,23 @@
     "validate_email_error": "Geçerli bir email girin",
     "validate_password_empty": "Şifre alanı boş bırakılamaz",
     "validate_password_error": "Geçersiz Şifre"
+  },
+  "volunteer_register": {
+    "title": "Gönüllü Kaydı",
+    "start_content": "Lütfen aşağıdaki bilgileri doldurarak kayıt olun.",
+    "name": "Ad",
+    "name_placeholder": "Adınızı giriniz",
+    "surname": "Soyad",
+    "surname_placeholder": "Soyadınızı giriniz",
+    "phone": "Telefon",
+    "phone_placeholder": "Telefon numaranızı giriniz",
+    "address": "Adres",
+    "address_placeholder": "Adresinizi giriniz",
+    "mail": "Email",
+    "mail_placeholder": "Email adresinizi giriniz",
+    "password": "Parola",
+    "password_placeholder": "Parolanızı giriniz",
+    "register": "Kayıt Ol",
+    "end_content": "Gönüllü olarak katıldığınız için teşekkür ederiz."
   }
 }

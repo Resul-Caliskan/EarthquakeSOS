@@ -121,7 +121,7 @@ export default function Login() {
           {isVisible && (
             <div className="loginFirst">
               <div className="loginSecond">
-                <img src={logo} alt="Resim" className="h-[60vh] z-10" />
+                <img src={logo} alt="Resim" className="h-[60vh] z-10 px-10" />
                 {/* <img src={ekip} alt="Resim" className="w-[70vh] z-10" /> */}
               </div>
             </div>
@@ -348,7 +348,7 @@ export default function Login() {
               >
                 {t("login.rememberme")}
               </Checkbox>
-              <a href="/volunter">
+              <a href="/volunteer">
                 <p className="text-[#1b2795] font-light text-sm underline">
                   {t("login.forgot_password")}
                 </p>

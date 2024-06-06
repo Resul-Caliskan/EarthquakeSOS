@@ -4,7 +4,7 @@ import Home from "./screens/home/home";
 import Login from "./screens/login/login";
 import i18n from "./localization/i18n";
 import { t } from "i18next";
-import VolunteerRegister from "./screens/login/volunter";
+import VolunteerRegister from "./screens/login/volunteer";
 const App = () => {
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
@@ -32,9 +32,8 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/" element={<Login />} />
-        {/* <Route path="/register" element={<Register />} /> */}
         <Route path="/home" element={<Home />} />
-        <Route path="/volunter" element={<VolunteerRegister />} />
+        <Route path="/volunteer" element={<VolunteerRegister />} />
       </Routes>
     </div>
   );

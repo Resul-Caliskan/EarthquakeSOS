@@ -21,5 +21,23 @@
     "validate_email_error": "Please enter a valid email",
     "validate_password_empty": "Password field cannot be empty",
     "validate_password_error": "Invalid Password"
+  },
+  "volunteer_register": {
+    "title": "Volunteer Registration",
+    "start_content": "Please fill in the information below to register.",
+    "name": "Name",
+    "name_placeholder": "Enter your name",
+    "surname": "Surname",
+    "surname_placeholder": "Enter your surname",
+    "phone": "Phone",
+    "phone_placeholder": "Enter your phone number",
+    "address": "Address",
+    "address_placeholder": "Enter your address",
+    "mail": "Email",
+    "mail_placeholder": "Enter your email address",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "register": "Register",
+    "end_content": "Thank you for joining as a volunteer."
   }
 }

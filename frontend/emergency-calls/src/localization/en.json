@@ -1,0 +1,25 @@
+{
+  "login": {
+    "content": "Welcome to the Disaster Management System",
+    "start_content": "Always Here for You",
+    "mail": "Mail",
+    "mail_placeholder": "Enter your email address",
+    "password": "Password",
+    "mail_message": "Enter your email!",
+    "mail_message_error": "Enter a valid email address!",
+    "password_placeholder": "Enter Your Password",
+    "password_message_error": "Enter a valid password!",
+    "rememberme": "Remember Me",
+    "forgot_password": "Be an Afad Volunteer",
+    "login": "Login",
+    "end_content": "Your user information is always safe!",
+    "notification_success_title": "Welcome to HRHUB",
+    "notification_success_content": "Login successful",
+    "notification_error_title": "Invalid User Credentials",
+    "notification_error_content": "Incorrect Email or Password. Please Try Again",
+    "validate_email_empty": "Email field cannot be empty",
+    "validate_email_error": "Please enter a valid email",
+    "validate_password_empty": "Password field cannot be empty",
+    "validate_password_error": "Invalid Password"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "login": {
+    "content": "Afet Yönetim Sistemine Hoş Geldiniz",
+    "start_content": "Her Zaman Yanınızdayız",
+    "mail": "E-posta",
+    "mail_placeholder": "Mail adresinizi yazınız",
+    "mail_message": "Email giriniz!",
+    "mail_message_error": "Geçerli bir email adresi giriniz!",
+    "password": "Şifre",
+    "password_placeholder": "Şifrenizi Giriniz",
+    "password_message_error": "Geçerli bir şifre giriniz!",
+    "rememberme": "Beni Hatırla",
+    "forgot_password": "Afad Gönüllüsü Ol",
+    "login": "Giriş Yap",
+    "end_content": "Kullanıcı bilgileriniz her zaman güvende!",
+    "notification_success_title": "HRHUB'a Hoş Geldiniz",
+    "notification_success_content": "Giriş işlemi başarılı",
+    "notification_error_title": "Geçersiz Kullanıcı Bilgileri",
+    "notification_error_content": "E-posta veya Şifreniz yanlış Lütfen Tekrar Giriniz",
+    "validate_email_empty": "Email alanı boş bırakılamaz",
+    "validate_email_error": "Geçerli bir email girin",
+    "validate_password_empty": "Şifre alanı boş bırakılamaz",
+    "validate_password_error": "Geçersiz Şifre"
+  }
+}

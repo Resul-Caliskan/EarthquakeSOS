@@ -39,5 +39,15 @@
     "password_placeholder": "Enter your password",
     "register": "Register",
     "end_content": "Thank you for joining as a volunteer."
+  },
+  "errors": {
+    "invalid_email": "Invalid email format",
+    "password_length": "Password must be at least 6 characters"
+  },
+  "messages": {
+    "registration_success": "Registration successful!",
+    "registration_failure": "Registration failed!",
+    "login_success": "Login successful!",
+    "login_failure": "Login failed!"
   }
 }

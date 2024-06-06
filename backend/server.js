@@ -46,6 +46,7 @@ const config = require("./src/config/config");
 const { connectToMongo } = require("./src/config/mongo");
 const CoordinateRoutes = require("./src/routes/coordinateRoutes");
 const AuthRoutes = require("./src/routes/authRoutes");
+const AuthWebRoutes = require("./src/routes/authWebRoutes");
 const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 
@@ -68,6 +69,7 @@ mongoose
 
 app.use("/api", CoordinateRoutes);
 app.use("/api", AuthRoutes);
+app.use("/api/web", AuthWebRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 const PORT = process.env.PORT || 5000;

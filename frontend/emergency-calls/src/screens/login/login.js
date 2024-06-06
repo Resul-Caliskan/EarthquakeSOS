@@ -12,6 +12,8 @@ import { Button, Checkbox, ConfigProvider, Input, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify"; // react-toastify import
+import "react-toastify/dist/ReactToastify.css"; // react-toastify styles
 import logo from "../../assets/logo.png";
 import ekip from "../../assets/ekip.png";
 import logoIcon from "../../assets/logoIcon.png";
@@ -27,6 +29,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [isFormValid, setIsFormValid] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +49,14 @@ export default function Login() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (validateEmail(email) && validatePassword(password)) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [email, password]);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -94,7 +105,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/auth/login`,
+        `http://localhost:5000/api/web/login`,
         { email, password }
       );
       const token = response.data.accessToken;
@@ -106,9 +117,29 @@ export default function Login() {
         localStorage.removeItem("rememberedEmail");
       }
 
-      navigate("/home");
+      toast.success(t("messages.login_success"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
     } catch (error) {
-      console.error(error.response.data.message);
+      toast.error(error.response.data.message || t("messages.login_failure"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -127,7 +158,6 @@ export default function Login() {
             </div>
           )}
         </div>
-       
       </div>
       <div className="flex flex-row absolute right-0 mr-3 mt-2 ">
         <button className="mr-4" onClick={() => changeLanguage("en")}>
@@ -135,12 +165,12 @@ export default function Login() {
         </button>
         <button onClick={() => changeLanguage("tr")}>Türkçe</button>
       </div>
-      <div className="flex flex-col   justify-center items-center h-screen form-div mx-auto p-5">
+      <div className="flex flex-col justify-center items-center h-screen form-div mx-auto p-5">
         <form
           onSubmit={handleSubmit}
-          className={`max-w-[458px] w-full mx-auto  form`}
+          className={`max-w-[458px] w-full mx-auto form`}
         >
-          <p className="text-3xl  text-left font-semibold">
+          <p className="text-3xl text-left font-semibold">
             {t("login.content")}
           </p>
           <h4 className="text-sm text-left my-6">{t("login.start_content")}</h4>
@@ -165,7 +195,7 @@ export default function Login() {
                 },
               }}
             >
-              <Space className={" block"}>
+              <Space className={"block"}>
                 <Input
                   data-test="email"
                   value={email}
@@ -179,7 +209,7 @@ export default function Login() {
                       message: t("login.mail_message_error"),
                     },
                   ]}
-                  className={`focus:custom-blue text-sm border pl-3 p-2   ${
+                  className={`focus:custom-blue text-sm border pl-3 p-2 ${
                     emailError ? "border-custom-red" : email ? "" : ""
                   } `}
                   onFocus={() => {
@@ -235,7 +265,7 @@ export default function Login() {
               </p>
             )}
           </div>
-          <div className="flex flex-col py-2">
+          <div>
             <div className="relative">
               <label className="text-gray-600 text-sm ">
                 {t("login.password")}
@@ -273,12 +303,6 @@ export default function Login() {
                       passwordError ? "border-custom-red" : password ? "" : ""
                     }`}
                     disabled={loading}
-                    /* onFocus={() => {
-                    setPasswordError();
-                  }}*/
-                    // onBlur={(e) => {
-
-                    // }}
                     onChange={(e) => {
                       handlePasswordChange(e);
                       setPassword(e.target.value);
@@ -356,27 +380,20 @@ export default function Login() {
             </div>
           </div>
 
-          {email &&
-          password &&
-          emailError === false &&
-          passwordError === false ? (
-            <button
-              data-test="loginbutton"
-              type="submit"
-              className="bg-[#0057D9] text-white w-full h-9  rounded-lg flex items-center justify-center mt-5"
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? (
-                <LoadingOutlined style={{ marginRight: "5px" }} spin />
-              ) : null}
-              {loading ? "" : t("login.login")}
-            </button>
-          ) : (
-            <Button disabled={true} className="h-9 w-full mt-5">
-              {t("login.login")}
-            </Button>
-          )}
+          <button
+            data-test="loginbutton"
+            type="submit"
+            className={`bg-[#0057D9] text-white w-full h-9 rounded-lg flex items-center justify-center mt-5 ${
+              !isFormValid || loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            onClick={handleSubmit}
+            disabled={!isFormValid || loading}
+          >
+            {loading ? (
+              <LoadingOutlined style={{ marginRight: "5px" }} spin />
+            ) : null}
+            {loading ? "" : t("login.login")}
+          </button>
 
           <div className="mt-2">
             <p className="text-xs  text-center font-thin mt-6">
@@ -384,10 +401,11 @@ export default function Login() {
             </p>
           </div>
         </form>
-        <div class="fixed bottom-0 right-0 mb-6 mr-4 vh-logo">
-          <img src={logoIcon} alt="Resim" class="h-[50px]" />
+        <div className="fixed bottom-0 right-0 mb-6 mr-4 vh-logo">
+          <img src={logoIcon} alt="Resim" className="h-[50px]" />
         </div>
       </div>
     </div>
   );
 }
+

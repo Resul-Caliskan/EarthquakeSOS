@@ -15,6 +15,7 @@ import { Button, ConfigProvider, Input, Space, Row, Col } from "antd";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import logoIcon from "../../assets/logoIcon.png";
 import logo from "../../assets/gonullu.png";
 import "./Login.css"; // Aynı CSS dosyasını kullanıyoruz
@@ -91,13 +92,36 @@ export default function VolunteerRegister() {
     }
 
     try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/auth/volunteer-register`,
-        { email, password, name, surname, phone, address }
-      );
-
-      navigate("/volunteer-confirmation");
+      await axios.post(`http://localhost:5000/api/web/register`, {
+        email,
+        password,
+        name,
+        surname,
+        phone,
+        address,
+      });
+      toast.success(t("messages.registration_success"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error) {
+      toast.error(error || t("messages.registration_failure"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       console.error(error.response.data.message);
     } finally {
       setLoading(false);

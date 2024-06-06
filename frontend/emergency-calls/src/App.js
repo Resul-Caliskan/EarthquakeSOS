@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route } from "react-router-dom";
 import Home from "./screens/home/home";
 import Login from "./screens/login/login";
 import i18n from "./localization/i18n";
 import { t } from "i18next";
 import VolunteerRegister from "./screens/login/volunteer";
+
 const App = () => {
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
@@ -30,6 +33,7 @@ const App = () => {
   };
   return (
     <div>
+    <ToastContainer />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />

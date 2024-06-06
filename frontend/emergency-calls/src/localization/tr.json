@@ -39,5 +39,15 @@
     "password_placeholder": "Parolanızı giriniz",
     "register": "Kayıt Ol",
     "end_content": "Gönüllü olarak katıldığınız için teşekkür ederiz."
+  },
+  "errors": {
+    "invalid_email": "Geçersiz email formatı",
+    "password_length": "Parola en az 6 karakter olmalıdır"
+  },
+  "messages": {
+    "registration_success": "Kayıt başarılı!",
+    "registration_failure": "Kayıt başarısız!",
+    "login_success": "Giriş başarılı!",
+    "login_failure": "Giriş başarısız!"
   }
 }

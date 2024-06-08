@@ -71,6 +71,10 @@
     "none": "None",
     "location": "Location",
     "image": "Image",
-    "audio_error": "Your browser does not support the audio element."
+    "audio_error": "Your browser does not support the audio element.",
+    "teams": "Teams",
+    "select": "Select Team",
+    "team-description":"Select a team below to direct a team to the Call for Assistance.",
+    "confirm":"Confirm"
   }
 }

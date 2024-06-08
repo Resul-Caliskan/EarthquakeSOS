@@ -21,6 +21,8 @@ import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import socket from "../config/socketConfig"; // Adjust the import according to your file structure
 import { withTranslation } from "react-i18next";
+import { getTeams } from "../backend/teamApi";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const BASE_URL = "https://earthquakesos.onrender.com"; // Make sure this matches your backend URL
 
@@ -72,9 +74,39 @@ function Row(props) {
   const { row, t } = props;
   const [open, setOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const [confirming, setConfirming] = useState(false);
 
   const handleChangeTab = (event, newValue) => {
     setSelectedTab(newValue);
+  };
+
+  const fetchTeams = async () => {
+    try {
+      const teamsData = await getTeams();
+      setTeams(teamsData);
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      fetchTeams();
+    }
+  }, [open]);
+
+  const handleTeamSelect = (teamId) => {
+    setSelectedTeam(teamId);
+    // Remove selected team from dropdown options
+    setTeams(teams.filter((team) => team.id !== teamId));
+  };
+
+  const handleConfirm = () => {
+    // Perform action to confirm team assignment
+    setConfirming(true);
+    // Add your logic here to handle team assignment confirmation
   };
 
   useEffect(() => {
@@ -102,7 +134,7 @@ function Row(props) {
           {row.audioUrl && (
             <audio key={row.audioUrl} controls>
               <source src={row.audioUrl} type="audio/mp3" />
-              {t('listComponent.audio_error')}
+              {t("listComponent.audio_error")}
             </audio>
           )}
         </TableCell>
@@ -119,38 +151,84 @@ function Row(props) {
                     component="div"
                     style={{ fontWeight: "bold" }}
                   >
-                    {t('listComponent.details')}
+                    {t("listComponent.details")}
                   </Typography>
                   <Typography style={{ marginBottom: 10 }}>
-                    {t('listComponent.message')}: {row.description}
+                    {t("listComponent.message")}: {row.description}
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     style={{ fontWeight: "bold" }}
                   >
-                    {t('listComponent.health_info')}
+                    {t("listComponent.health_info")}
                   </Typography>
                   <Typography>
-                    {t('listComponent.allergies')}: {row.healthInfo.alerjiler.join(", ") || t('listComponent.none')}
+                    {t("listComponent.allergies")}:{" "}
+                    {row.healthInfo.alerjiler.join(", ") ||
+                      t("listComponent.none")}
                   </Typography>
                   <Typography>
-                    {t('listComponent.medications')}: {row.healthInfo.ilaclar.join(", ") || t('listComponent.none')}
+                    {t("listComponent.medications")}:{" "}
+                    {row.healthInfo.ilaclar.join(", ") ||
+                      t("listComponent.none")}
                   </Typography>
                   <Typography>
-                    {t('listComponent.chronic_illnesses')}:{" "}
-                    {row.healthInfo.kronikHastaliklar.join(", ") || t('listComponent.none')}
+                    {t("listComponent.chronic_illnesses")}:{" "}
+                    {row.healthInfo.kronikHastaliklar.join(", ") ||
+                      t("listComponent.none")}
                   </Typography>
                 </div>
                 <div>
                   <Tabs value={selectedTab} onChange={handleChangeTab}>
-                    <Tab label={t('listComponent.location')} />
-                    <Tab label={t('listComponent.image')} />
+                    <Tab label={t("listComponent.location")} />
+                    <Tab label={t("listComponent.image")} />
+                    <Tab label={t("listComponent.teams")} />
                   </Tabs>
+
+                  {selectedTab === 2 && (
+                    <div className="mt-4">
+                      {" "}
+                      <Typography
+                        variant="subtitle1"
+                        style={{ marginBottom: 10, fontWeight: "initial" }}
+                      >
+                        {t("listComponent.team-description")}{" "}
+                      </Typography>{" "}
+                      <select
+                        className="bg-red-500 p-2 rounded-md mb-2 mr-2"
+                        value={selectedTeam}
+                        onChange={(e) => handleTeamSelect(e.target.value)}
+                      >
+                        {" "}
+                        <option value="">
+                          {t("listComponent.select")}
+                        </option>{" "}
+                        {teams.map((team) => (
+                          <option key={team.id} value={team.id}>
+                            {" "}
+                            {team.name}{" "}
+                          </option>
+                        ))}{" "}
+                      </select>{" "}
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
+                        onClick={handleConfirm}
+                        disabled={!selectedTeam || confirming}
+                      >
+                        {" "}
+                        {confirming ? (
+                          <LoadingOutlined className="px-3" />
+                        ) : (
+                          t("listComponent.confirm")
+                        )}{" "}
+                      </button>{" "}
+                    </div>
+                  )}
 
                   {selectedTab === 1 && row.imageUrl && (
                     <img
                       src={row.imageUrl}
-                      alt={t('listComponent.emergency')}
+                      alt="Emergency"
                       style={{ width: "20%", marginTop: "10px" }}
                     />
                   )}
@@ -234,7 +312,7 @@ function ListComponent({ t }) {
               .replace("]", "")
               .split(",")
               .map((coord) => parseFloat(coord.trim()));
-    
+
             return createData(
               item._id,
               item.name,
@@ -252,9 +330,9 @@ function ListComponent({ t }) {
         console.error("Error fetching data:", error);
       }
     };
-    
+
     fetchData();
-    
+
     const handleEmergencyWeb = (data) => {
       const coordinates = data.coordinate[0]
         .replace("[", "")
@@ -272,7 +350,7 @@ function ListComponent({ t }) {
         data.healthInfo,
         coordinates
       );
-    
+
       if (isMounted) {
         setRows((prevRows) => {
           const index = prevRows.findIndex((row) => row.id === data.id);
@@ -288,9 +366,9 @@ function ListComponent({ t }) {
         });
       }
     };
-    
+
     socket.on("emergencyWeb", handleEmergencyWeb);
-    
+
     return () => {
       isMounted = false;
       socket.off("emergencyWeb", handleEmergencyWeb);
@@ -298,31 +376,31 @@ function ListComponent({ t }) {
   }, []);
 
   return (
-  <ThemeProvider theme={darkTheme}>
-  <TableContainer component={Paper}>
-  <Table aria-label="collapsible table">
-  <TableHead>
-  <TableRow>
-  <TableCell />
-  <TableCell>{t('listComponent.caller')}</TableCell>
-  <TableCell>{t('listComponent.description')}</TableCell>
-  <TableCell>{t('listComponent.time')}</TableCell>
-  <TableCell>{t('listComponent.audio')}</TableCell>
-  </TableRow>
-  </TableHead>
-  <TableBody>
-  {rows.map((row) => (
-  <TranslatedRow key={row.id} row={row} t={t} />
-  ))}
-  </TableBody>
-  </Table>
-  </TableContainer>
-  </ThemeProvider>
+    <ThemeProvider theme={darkTheme}>
+      <TableContainer component={Paper}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>{t("listComponent.caller")}</TableCell>
+              <TableCell>{t("listComponent.description")}</TableCell>
+              <TableCell>{t("listComponent.time")}</TableCell>
+              <TableCell>{t("listComponent.audio")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <TranslatedRow key={row.id} row={row} t={t} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </ThemeProvider>
   );
-  }
-  
-  ListComponent.propTypes = {
+}
+
+ListComponent.propTypes = {
   t: PropTypes.func.isRequired,
-  };
-  
-  export default withTranslation()(ListComponent);
+};
+
+export default withTranslation()(ListComponent);

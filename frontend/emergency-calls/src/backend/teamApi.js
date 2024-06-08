@@ -8,7 +8,7 @@ const API_URL = 'http://localhost:5000/api';
 export const getUnassignedUsers = async () => {
   try {
     const response = await axios.get(`${API_URL}/web/users/unassigned`);
-    toast.success('Gönüllüler Başarıyla Listelelendi');
+    // toast.success('Gönüllüler Başarıyla Listelelendi');
     return response.data;
   } catch (error) {
     toast.error(`Error fetching unassigned users: ${error.response?.data?.message || error.message}`);
@@ -19,7 +19,7 @@ export const getUnassignedUsers = async () => {
 export const getTeams = async () => {
   try {
     const response = await axios.get(`${API_URL}/teams`);
-    toast.success('Takımlar Başarıyla Listelendi');
+    // toast.success('Takımlar Başarıyla Listelendi');
     return response.data;
   } catch (error) {
     toast.error(`Error fetching teams: ${error.response?.data?.message || error.message}`);

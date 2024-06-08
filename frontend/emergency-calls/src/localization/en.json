@@ -1,0 +1,86 @@
+{
+  "login": {
+    "content": "Welcome to the Disaster Management System",
+    "start_content": "Always Here for You",
+    "mail": "Mail",
+    "mail_placeholder": "Enter your email address",
+    "password": "Password",
+    "mail_message": "Enter your email!",
+    "mail_message_error": "Enter a valid email address!",
+    "password_placeholder": "Enter Your Password",
+    "password_message_error": "Enter a valid password!",
+    "rememberme": "Remember Me",
+    "forgot_password": "Be an Afad Volunteer",
+    "login": "Login",
+    "end_content": "Your user information is always safe!",
+    "notification_success_title": "Welcome to HRHUB",
+    "notification_success_content": "Login successful",
+    "notification_error_title": "Invalid User Credentials",
+    "notification_error_content": "Incorrect Email or Password. Please Try Again",
+    "validate_email_empty": "Email field cannot be empty",
+    "validate_email_error": "Please enter a valid email",
+    "validate_password_empty": "Password field cannot be empty",
+    "validate_password_error": "Invalid Password"
+  },
+  "home": {
+    "welcome": "Welcome to ESOS",
+    "emergency_calls": "Emergency Calls",
+    "call_map": "Call Map",
+    "team_management": "Team Management",
+    "logout": "Logout"
+  },
+  "volunteer_register": {
+    "title": "Volunteer Registration",
+    "start_content": "Please fill in the information below to register.",
+    "name": "Name",
+    "name_placeholder": "Enter your name",
+    "surname": "Surname",
+    "surname_placeholder": "Enter your surname",
+    "phone": "Phone",
+    "phone_placeholder": "Enter your phone number",
+    "address": "Address",
+    "address_placeholder": "Enter your address",
+    "mail": "Email",
+    "mail_placeholder": "Enter your email address",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "register": "Register",
+    "end_content": "Thank you for joining as a volunteer."
+  },
+  "errors": {
+    "invalid_email": "Invalid email format",
+    "password_length": "Password must be at least 6 characters"
+  },
+  "messages": {
+    "registration_success": "Registration successful!",
+    "registration_failure": "Registration failed!",
+    "login_success": "Login successful!",
+    "login_failure": "Login failed!"
+  },
+  "listComponent": {
+    "caller": "Caller",
+    "description": "Description",
+    "time": "Time",
+    "audio": "Audio",
+    "details": "Details",
+    "message": "Message",
+    "health_info": "Health Information",
+    "allergies": "Allergies",
+    "medications": "Medications",
+    "chronic_illnesses": "Chronic Illnesses",
+    "none": "None",
+    "location": "Location",
+    "image": "Image",
+    "audio_error": "Your browser does not support the audio element.",
+    "teams": "Teams",
+    "select": "Select Team",
+    "team-description":"Select a team below to direct a team to the Call for Assistance.",
+    "confirm":"Confirm"
+  },
+  "teams": {
+    "volunteer": "Volunteers",
+    "team": "Teams",
+    "add_teams": "Create Team",
+    "input": "Create New Team..."
+  }
+}

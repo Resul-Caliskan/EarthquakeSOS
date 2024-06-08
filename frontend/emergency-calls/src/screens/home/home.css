@@ -1,0 +1,151 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  text-align: center;
+  padding-bottom: 20px;
+  background-color: #ff0000;
+  border-end-end-radius: 30px;
+  border-end-start-radius: 30px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.main {
+  
+  padding: 10px;
+}
+
+.footer {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.footer-text {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+.navbar {
+  position: relative;
+  background-color: #c61d1d;
+  color: #fff;
+  width: auto;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  padding: 24px 24px 12px 24px;
+  justify-content: space-between;
+}
+.rectangleContainer {
+  display: flex;
+
+  background-color: #c61d1d;
+  position: absolute;
+  width: 268px;
+  height: 60px;
+  margin-top: -27px;
+  border-bottom-right-radius: 10px;
+  left: 167px;
+}
+.rectangleCenter {
+  z-index: 5;
+  position: absolute;
+  width: 200px;
+  height: 60px;
+  margin-left: 34px;
+  background-color: #FFFFFF;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.rectangleSubtract {
+  z-index: 1;
+  position: relative;
+  width: 240px;
+  height: 30px;
+  background-color: #FFFFFF;
+  border-top-left-radius: 20px;
+  margin-left: 15px;
+  margin-top: 30px;
+}
+.rectangleLeft {
+  z-index: 5;
+  position: absolute;
+  width: 34px;
+  height: 60px;
+  background-color: #c61d1d;
+  border-bottom-right-radius: 10px;
+}
+
+.rectangleRight {
+  z-index: 5;
+  position: absolute;
+  width: 34px;
+  height: 60px;
+  background-color: #c61d1d;
+  border-bottom-left-radius: 10px;
+  margin-left: 234px;
+
+}
+.rectangleContainer {
+  display: flex;
+
+  background-color: #c61d1d;
+  position: absolute;
+  width: 268px;
+  height: 60px;
+  margin-top: -27px;
+  border-bottom-right-radius: 10px;
+  left: 167px;
+}
+.menu {
+  height: 64px;
+  width: auto;
+  background-color: #FFFFFF;
+  list-style: none;
+  padding: 12px 16px 0px 16px;
+  overflow-y: auto;
+
+}
+
+.menu-item {
+  align-items: center;
+  min-width: 100px;
+  width: auto;
+  height: 40px;
+  display: inline-block;
+  margin-right: 20px;
+
+  border-radius: 8px;
+  justify-content: center;
+  text-align: center;
+}
+
+.menu-link {
+  width: auto;
+  height: 40px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  text-align: center;
+  padding: 10px;
+  display: inline-block;
+
+}

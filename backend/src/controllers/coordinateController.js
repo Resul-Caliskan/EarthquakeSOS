@@ -153,7 +153,6 @@
 //   uploadMiddleware: upload.single("record"),
 // };
 
-
 const config = require("../config/config");
 const User = require("../models/user");
 const { getSocketIo } = require("../config/notificationConfig");
@@ -170,8 +169,8 @@ const BASE_URL = config.BASE_URL || "https://earthquakesos.onrender.com";
 
 async function updateCoordinate(req, res) {
   const { coordinate, id, message, date } = req.body;
-  const recordFile = req.files['record'] ? req.files['record'][0] : null;
-  const imageFile = req.files['image'] ? req.files['image'][0] : null;
+  const recordFile = req.files["record"] ? req.files["record"][0] : null;
+  const imageFile = req.files["image"] ? req.files["image"][0] : null;
 
   console.log("Coordinate:", coordinate);
   if (!recordFile) {
@@ -196,7 +195,7 @@ async function updateCoordinate(req, res) {
         // Process image file if exists
         let base64Image = null;
         if (imageFile) {
-          base64Image = imageFile.buffer.toString('base64');
+          base64Image = imageFile.buffer.toString("base64");
         }
 
         // Update the user's record field directly
@@ -233,7 +232,9 @@ async function updateCoordinate(req, res) {
           message: updateCoordinateUser.message,
           time: updateCoordinateUser.createdAt,
           audioUrl: audioUrl, // Send as Base64 URL
-          imageUrl: base64Image ? `data:image/jpeg;base64,${base64Image}` : null,
+          imageUrl: base64Image
+            ? `data:image/jpeg;base64,${base64Image}`
+            : null,
           healthInfo: updateCoordinateUser.healthInfo,
           coordinate: updateCoordinateUser.coordinate,
         });
@@ -310,8 +311,12 @@ async function getAllEmergency(req, res) {
 
         return {
           ...user._doc,
-          recordUrl: base64Audio ? `data:audio/mp3;base64,${base64Audio}` : null,
-          imageUrl: base64Image ? `data:image/jpeg;base64,${base64Image}` : null,
+          recordUrl: base64Audio
+            ? `data:audio/mp3;base64,${base64Audio}`
+            : null,
+          imageUrl: base64Image
+            ? `data:image/jpeg;base64,${base64Image}`
+            : null,
         };
       })
     );
@@ -332,12 +337,11 @@ async function getAllEmergency(req, res) {
 module.exports = {
   updateCoordinate,
   getAllEmergency,
-  uploadMiddleware: upload.fields([{ name: 'record', maxCount: 1 }, { name: 'image', maxCount: 1 }]),
+  uploadMiddleware: upload.fields([
+    { name: "record", maxCount: 1 },
+    { name: "image", maxCount: 1 },
+  ]),
 };
-
-
-
-
 
 // const config = require("../config/config");
 // const User = require("../models/user");

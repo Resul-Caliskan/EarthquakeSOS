@@ -146,7 +146,7 @@ function Home() {
       <div className="h-full p-2">
         {selectedOption === "emergency" && <ListComponent t={t} />}
         {selectedOption === "map" && <CallsMap />}
-        {selectedOption === "team" && <TeamManagement />}
+        {selectedOption === "team" && <TeamManagement t={t} />}
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ import React, { useEffect, useState } from "react";
 import { getUnassignedUsers } from "../../backend/teamApi";
 import "./Team.css";
 
-const UserList = ({ onSelectUser, selectedAdded }) => {
+const UserList = ({ onSelectUser, selectedAdded, t }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -55,7 +55,6 @@ const UserList = ({ onSelectUser, selectedAdded }) => {
   }, [selectedAdded]); // selectedUser değiştiğinde yeniden kullanıcıları al
 
   // Seçilen kullanıcı listeden çıkar
-
 
   return (
     <div className="user-list">
@@ -69,16 +68,16 @@ const UserList = ({ onSelectUser, selectedAdded }) => {
           fontWeight: "bold",
         }}
       >
-        Gönüllüler
+        {t("teams.volunteer")}
       </h3>
       <div className="grid grid-cols-4">
-      {users.map((user) => (
-        <div key={user._id} onClick={() => onSelectUser(user)}>
-          <p className="text-blue-600 underline hover:text-green-400 cursor-pointer">
-            {user.fullName}
-          </p>
-        </div>
-      ))}
+        {users.map((user) => (
+          <div key={user._id} onClick={() => onSelectUser(user)}>
+            <p className="text-blue-600 underline hover:text-green-400 cursor-pointer">
+              {user.fullName}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

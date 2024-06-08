@@ -76,5 +76,11 @@
     "select":"Ekip Seç",
     "team-description":"Yardım Çağrısına ekip yönlendirmek için aşağıdan ekip seçiniz.",
     "confirm":"Onayla"
+  },
+  "teams": {
+    "volunteer": "Gönüllüler",
+    "team": "Ekipler",
+    "add_teams": "Ekip Oluştur",
+    "input": "Yeni Ekip Ekle..."
   }
 }

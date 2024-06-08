@@ -3,9 +3,10 @@ import { getTeams, createTeam, addUserToTeam } from "../../backend/teamApi";
 import "./Team.css";
 import { PlusCircleOutlined } from "@ant-design/icons";
 
-const TeamList = ({ selectedUser ,onSelectedAdded}) => {
+const TeamList = ({ selectedUser, onSelectedAdded, t }) => {
   const [teams, setTeams] = useState([]);
   const [newTeamName, setNewTeamName] = useState("");
+  const [addedToTeam, setAddedToTeam] = useState(false);
   const borderColorList = [
     "#ff5733",
     "#33ff57",
@@ -25,6 +26,19 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
     };
     fetchTeams();
   }, []);
+
+  useEffect(() => {
+    const checkUserInTeams = () => {
+      if (selectedUser && selectedUser._id) {
+        const userInTeams = teams.some((team) =>
+          team.members.some((member) => member._id === selectedUser._id)
+        );
+        setAddedToTeam(userInTeams);
+      }
+    };
+
+    checkUserInTeams();
+  }, [teams, selectedUser]);
 
   const handleCreateTeam = async () => {
     try {
@@ -52,6 +66,10 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
     }
   };
 
+  const isUserInTeam = (team, userId) => {
+    return team.members.some((member) => member._id === userId);
+  };
+
   return (
     <div className="team-list">
       <div className="team-management-header">
@@ -65,7 +83,7 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
             fontWeight: "bold",
           }}
         >
-          Ekipler
+          {t("teams.team")}
         </h1>
         <div className="create-team-section">
           <input
@@ -78,7 +96,7 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
             type="text"
             value={newTeamName}
             onChange={(e) => setNewTeamName(e.target.value)}
-            placeholder="Yeni Ekip Ekle"
+            placeholder={t("teams.input")}
           />
           <button
             style={{
@@ -91,7 +109,7 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
             }}
             onClick={handleCreateTeam}
           >
-            Ekip Oluştur
+            {t("teams.add_teams")}
           </button>
         </div>
       </div>
@@ -109,7 +127,7 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
             }}
           >
             <h3 style={{ fontWeight: "bold" }}>{team.name.toUpperCase()}</h3>
-            {selectedUser && (
+            {!addedToTeam && selectedUser && !isUserInTeam(team, selectedUser._id) && (
               <button
                 className="flex flex-row  p-1 px-2 my-1 border-2 rounded-lg border-blue-500 hover:border-blue-800 text-blue-500 hover:text-blue-800"
                 onClick={() => handleAddUserToTeam(team._id)}
@@ -119,9 +137,12 @@ const TeamList = ({ selectedUser ,onSelectedAdded}) => {
               </button>
             )}
             <div>
-              {team.members.map((member) => (
-                <div key={member._id}>{member.fullName}</div>
-              ))}
+              {team.members &&
+                team.members.map(
+                  (member) =>
+                    member &&
+                    member._id && <div key={member._id}>{member.fullName}</div>
+                )}
             </div>
           </div>
         ))}

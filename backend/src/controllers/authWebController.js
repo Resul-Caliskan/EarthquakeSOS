@@ -17,6 +17,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       fullName,
       phone,
+      role: "user",
       address,
     });
 
@@ -48,11 +49,11 @@ exports.login = async (req, res) => {
     }
 
     // JWT oluştur
-    const token = jwt.sign({ userId: user._id }, "şifre", {
+    const token = jwt.sign({ userId: user._id, role: user.role }, "şifre", {
       expiresIn: "1h",
     });
 
-    res.status(200).json({ token });
+    res.status(200).json({ token, role: user.role });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Sunucu hatası" });

@@ -4,12 +4,29 @@ import "leaflet/dist/leaflet.css";
 import ListComponent from "../../components/listComponent";
 import socket from "../../config/socketConfig";
 import CallsMap from "../../components/callsMap";
+import { getRoleFromToken } from "../../utils/getRole";
+import { useNavigate } from "react-router-dom";
+
 function Home() {
+  const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("emergency");
+  const [isLoading, setIsLoading] = useState(true); // State for loading status
+  const token = localStorage.getItem("token");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
   };
+
+  useEffect(() => {
+    // Perform role check and set loading status
+    const role = getRoleFromToken(token);
+    if (role === "user") {
+      navigate("/forbidden");
+    } else {
+      setIsLoading(false);
+    }
+  }, [token, navigate]);
+
   useEffect(() => {
     const onNotificationConnect = () => {
       console.log("Bağladım Web");
@@ -19,6 +36,10 @@ function Home() {
       socket.off("connect", onNotificationConnect);
     };
   }, []);
+
+  if (isLoading) {
+    return null; // Render nothing or a loading spinner while checking the role
+  }
 
   return (
     <div style={{ flex: 1 }} className="App">

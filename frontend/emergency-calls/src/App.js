@@ -7,6 +7,8 @@ import Login from "./screens/login/login";
 import i18n from "./localization/i18n";
 import { t } from "i18next";
 import VolunteerRegister from "./screens/login/volunteer";
+import HomeUser from "./screens/home/homeUser";
+import Forbidden from "./screens/forbidden/forbidden";
 
 const App = () => {
   const [initialized, setInitialized] = useState(false);
@@ -37,7 +39,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/home-user" element={<HomeUser />} />
+        <Route path="/forbidden" element={<Forbidden />} />
         <Route path="/volunteer" element={<VolunteerRegister />} />
+        
       </Routes>
     </div>
   );

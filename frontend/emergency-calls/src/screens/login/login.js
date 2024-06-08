@@ -104,11 +104,11 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/web/login`,
-        { email, password }
-      );
-      const token = response.data.accessToken;
+      const response = await axios.post(`http://localhost:5000/api/web/login`, {
+        email,
+        password,
+      });
+      const token = response.data.token;
       localStorage.setItem("token", token);
 
       if (rememberMe) {
@@ -128,7 +128,11 @@ export default function Login() {
       });
 
       setTimeout(() => {
-        navigate("/home");
+        if (response.data.role === "admin") {
+          navigate("/home");
+        } else {
+          navigate("/home-user");
+        }
       }, 1000);
     } catch (error) {
       toast.error(error.response.data.message || t("messages.login_failure"), {
@@ -408,4 +412,3 @@ export default function Login() {
     </div>
   );
 }
-

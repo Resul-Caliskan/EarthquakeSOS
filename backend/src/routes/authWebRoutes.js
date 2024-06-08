@@ -9,5 +9,6 @@ router.post("/register", authController.register);
 
 // Giriş rotası
 router.post("/login", authController.login);
+router.get('/users/unassigned', authController.getUnassignedUsers);
 
 module.exports = router;

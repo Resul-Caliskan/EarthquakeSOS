@@ -6,7 +6,7 @@ const User = require("../models/userWeb");
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, role,name, surname, phone, address } = req.body;
+    const { email, password, role, name, surname, phone, address } = req.body;
     const fullName = `${name} ${surname}`;
     // Şifre hashleme
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,7 +17,8 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       fullName,
       phone,
-      role:role,
+      role: role,
+      team:null,
       address,
     });
 
@@ -59,3 +60,14 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Sunucu hatası" });
   }
 };
+
+// controllers/userController.js
+exports.getUnassignedUsers = async (req, res) => {
+  try {
+    const users = await User.find({ team: null, role: { $ne: 'admin' } });
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+

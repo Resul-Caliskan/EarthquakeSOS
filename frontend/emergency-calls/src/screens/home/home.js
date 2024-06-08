@@ -9,6 +9,7 @@ import { getRoleFromToken } from "../../utils/getRole";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LogoutOutlined } from "@ant-design/icons";
+import TeamManagement from "../../components/teamManagement/TeamManagement";
 function Home() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -145,7 +146,7 @@ function Home() {
       <div className="h-full p-2">
         {selectedOption === "emergency" && <ListComponent t={t} />}
         {selectedOption === "map" && <CallsMap />}
-        {selectedOption === "team" && <CallsMap />}
+        {selectedOption === "team" && <TeamManagement />}
       </div>
     </div>
   );

@@ -22,6 +22,13 @@
     "validate_password_empty": "Password field cannot be empty",
     "validate_password_error": "Invalid Password"
   },
+  "home": {
+    "welcome": "Welcome to ESOS",
+    "emergency_calls": "Emergency Calls",
+    "call_map": "Call Map",
+    "team_management": "Team Management",
+    "logout": "Logout"
+  },
   "volunteer_register": {
     "title": "Volunteer Registration",
     "start_content": "Please fill in the information below to register.",
@@ -49,5 +56,21 @@
     "registration_failure": "Registration failed!",
     "login_success": "Login successful!",
     "login_failure": "Login failed!"
+  },
+  "listComponent": {
+    "caller": "Caller",
+    "description": "Description",
+    "time": "Time",
+    "audio": "Audio",
+    "details": "Details",
+    "message": "Message",
+    "health_info": "Health Information",
+    "allergies": "Allergies",
+    "medications": "Medications",
+    "chronic_illnesses": "Chronic Illnesses",
+    "none": "None",
+    "location": "Location",
+    "image": "Image",
+    "audio_error": "Your browser does not support the audio element."
   }
 }

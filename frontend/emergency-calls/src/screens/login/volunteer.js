@@ -92,9 +92,11 @@ export default function VolunteerRegister() {
     }
 
     try {
+      const role= "user";
       await axios.post(`http://localhost:5000/api/web/register`, {
         email,
         password,
+        role,
         name,
         surname,
         phone,

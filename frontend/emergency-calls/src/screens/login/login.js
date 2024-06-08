@@ -8,14 +8,13 @@ import {
   LockOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, ConfigProvider, Input, Space } from "antd";
+import { Checkbox, ConfigProvider, Input, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify"; // react-toastify import
 import "react-toastify/dist/ReactToastify.css"; // react-toastify styles
 import logo from "../../assets/logo.png";
-import ekip from "../../assets/ekip.png";
 import logoIcon from "../../assets/logoIcon.png";
 import "./Login.css";
 

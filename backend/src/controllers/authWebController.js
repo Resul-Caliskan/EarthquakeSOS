@@ -6,7 +6,7 @@ const User = require("../models/userWeb");
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name, surname, phone, address } = req.body;
+    const { email, password, role,name, surname, phone, address } = req.body;
     const fullName = `${name} ${surname}`;
     // Şifre hashleme
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       fullName,
       phone,
-      role: "user",
+      role:role,
       address,
     });
 

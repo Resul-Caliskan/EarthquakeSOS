@@ -1,3 +1,4 @@
+// src/pages/Home.js
 import React, { useState, useEffect } from "react";
 import "./home.css";
 import "leaflet/dist/leaflet.css";
@@ -6,8 +7,10 @@ import socket from "../../config/socketConfig";
 import CallsMap from "../../components/callsMap";
 import { getRoleFromToken } from "../../utils/getRole";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Home() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("emergency");
   const [isLoading, setIsLoading] = useState(true); // State for loading status
@@ -17,13 +20,28 @@ function Home() {
     setSelectedOption(option);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    document.cookie = `i18next=${lng}; path=/`;
+    document.title = "AFAD | ESOS";
+  };
+
   useEffect(() => {
     // Perform role check and set loading status
-    const role = getRoleFromToken(token);
-    if (role === "user") {
+    if (!token) {
       navigate("/forbidden");
     } else {
-      setIsLoading(false);
+      const role = getRoleFromToken(token);
+      if (role === "user") {
+        navigate("/forbidden");
+      } else {
+        setIsLoading(false);
+      }
     }
   }, [token, navigate]);
 
@@ -64,6 +82,17 @@ function Home() {
               <div className="rectangleRight"></div>
             </div>
           </div>
+          <div className="absolute top-4 right-4">
+            <button className="mr-4" onClick={() => changeLanguage("en")}>
+              English
+            </button>
+            <button className="mr-4" onClick={() => changeLanguage("tr")}>
+              Türkçe
+            </button>
+            <button onClick={handleLogout} className="logout-button">
+              {t("home.logout")}
+            </button>
+          </div>
         </div>
         <ul className="menu">
           <li
@@ -78,7 +107,7 @@ function Home() {
               onClick={() => handleOptionClick("emergency")}
               className="menu-link"
             >
-              Acil Çağrılar
+              {t("home.emergency_calls")}
             </a>
           </li>
           <li
@@ -93,7 +122,7 @@ function Home() {
               className="menu-link"
               onClick={() => handleOptionClick("map")}
             >
-              Çağrı Haritası
+              {t("home.call_map")}
             </a>
           </li>
           <li
@@ -108,13 +137,13 @@ function Home() {
               className="menu-link"
               onClick={() => handleOptionClick("team")}
             >
-              Ekip Yönetimi
+              {t("home.team_management")}
             </a>
           </li>
         </ul>
       </div>
       <div className="h-full p-2">
-        {selectedOption === "emergency" && <ListComponent />}
+        {selectedOption === "emergency" && <ListComponent t={t} />}
         {selectedOption === "map" && <CallsMap />}
         {selectedOption === "team" && <CallsMap />}
       </div>

@@ -20,6 +20,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import socket from "../config/socketConfig"; // Adjust the import according to your file structure
+import { withTranslation } from "react-i18next";
 
 const BASE_URL = "https://earthquakesos.onrender.com"; // Make sure this matches your backend URL
 
@@ -68,7 +69,7 @@ function createData(
 }
 
 function Row(props) {
-  const { row } = props;
+  const { row, t } = props;
   const [open, setOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -101,7 +102,7 @@ function Row(props) {
           {row.audioUrl && (
             <audio key={row.audioUrl} controls>
               <source src={row.audioUrl} type="audio/mp3" />
-              Your browser does not support the audio element.
+              {t('listComponent.audio_error')}
             </audio>
           )}
         </TableCell>
@@ -118,38 +119,38 @@ function Row(props) {
                     component="div"
                     style={{ fontWeight: "bold" }}
                   >
-                    Detaylar
+                    {t('listComponent.details')}
                   </Typography>
                   <Typography style={{ marginBottom: 10 }}>
-                    Mesaj: {row.description}
+                    {t('listComponent.message')}: {row.description}
                   </Typography>
                   <Typography
                     variant="subtitle1"
                     style={{ fontWeight: "bold" }}
                   >
-                    Sağlık Bilgileri:
+                    {t('listComponent.health_info')}
                   </Typography>
                   <Typography>
-                    Alerjiler: {row.healthInfo.alerjiler.join(", ") || "Yok"}
+                    {t('listComponent.allergies')}: {row.healthInfo.alerjiler.join(", ") || t('listComponent.none')}
                   </Typography>
                   <Typography>
-                    İlaçlar: {row.healthInfo.ilaclar.join(", ") || "Yok"}
+                    {t('listComponent.medications')}: {row.healthInfo.ilaclar.join(", ") || t('listComponent.none')}
                   </Typography>
                   <Typography>
-                    Kronik Hastalıklar:{" "}
-                    {row.healthInfo.kronikHastaliklar.join(", ") || "Yok"}
+                    {t('listComponent.chronic_illnesses')}:{" "}
+                    {row.healthInfo.kronikHastaliklar.join(", ") || t('listComponent.none')}
                   </Typography>
                 </div>
                 <div>
                   <Tabs value={selectedTab} onChange={handleChangeTab}>
-                    <Tab label="Konum" />
-                    <Tab label="Resim" />
+                    <Tab label={t('listComponent.location')} />
+                    <Tab label={t('listComponent.image')} />
                   </Tabs>
 
                   {selectedTab === 1 && row.imageUrl && (
                     <img
                       src={row.imageUrl}
-                      alt="Emergency"
+                      alt={t('listComponent.emergency')}
                       style={{ width: "20%", marginTop: "10px" }}
                     />
                   )}
@@ -202,9 +203,12 @@ Row.propTypes = {
     }).isRequired,
     coordinate: PropTypes.arrayOf(PropTypes.number).isRequired,
   }).isRequired,
+  t: PropTypes.func.isRequired,
 };
 
-export default function ListComponent() {
+const TranslatedRow = withTranslation()(Row);
+
+function ListComponent({ t }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -230,7 +234,7 @@ export default function ListComponent() {
               .replace("]", "")
               .split(",")
               .map((coord) => parseFloat(coord.trim()));
-
+    
             return createData(
               item._id,
               item.name,
@@ -248,9 +252,9 @@ export default function ListComponent() {
         console.error("Error fetching data:", error);
       }
     };
-
+    
     fetchData();
-
+    
     const handleEmergencyWeb = (data) => {
       const coordinates = data.coordinate[0]
         .replace("[", "")
@@ -268,7 +272,7 @@ export default function ListComponent() {
         data.healthInfo,
         coordinates
       );
-
+    
       if (isMounted) {
         setRows((prevRows) => {
           const index = prevRows.findIndex((row) => row.id === data.id);
@@ -284,9 +288,9 @@ export default function ListComponent() {
         });
       }
     };
-
+    
     socket.on("emergencyWeb", handleEmergencyWeb);
-
+    
     return () => {
       isMounted = false;
       socket.off("emergencyWeb", handleEmergencyWeb);
@@ -294,25 +298,31 @@ export default function ListComponent() {
   }, []);
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <TableContainer component={Paper}>
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow>
-              <TableCell />
-              <TableCell>Çağrıyı Yapan</TableCell>
-              <TableCell>Açıklama</TableCell>
-              <TableCell>Zaman</TableCell>
-              <TableCell>Ses Kaydı</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <Row key={row.id} row={row} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </ThemeProvider>
+  <ThemeProvider theme={darkTheme}>
+  <TableContainer component={Paper}>
+  <Table aria-label="collapsible table">
+  <TableHead>
+  <TableRow>
+  <TableCell />
+  <TableCell>{t('listComponent.caller')}</TableCell>
+  <TableCell>{t('listComponent.description')}</TableCell>
+  <TableCell>{t('listComponent.time')}</TableCell>
+  <TableCell>{t('listComponent.audio')}</TableCell>
+  </TableRow>
+  </TableHead>
+  <TableBody>
+  {rows.map((row) => (
+  <TranslatedRow key={row.id} row={row} t={t} />
+  ))}
+  </TableBody>
+  </Table>
+  </TableContainer>
+  </ThemeProvider>
   );
-}
+  }
+  
+  ListComponent.propTypes = {
+  t: PropTypes.func.isRequired,
+  };
+  
+  export default withTranslation()(ListComponent);

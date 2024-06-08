@@ -22,6 +22,13 @@
     "validate_password_empty": "Şifre alanı boş bırakılamaz",
     "validate_password_error": "Geçersiz Şifre"
   },
+  "home": {
+    "welcome": "ESOS'a Hoşgeldiniz",
+    "emergency_calls": "Acil Çağrılar",
+    "call_map": "Çağrı Haritası",
+    "team_management": "Ekip Yönetimi",
+    "logout": "Çıkış Yap"
+  },
   "volunteer_register": {
     "title": "Gönüllü Kaydı",
     "start_content": "Lütfen aşağıdaki bilgileri doldurarak kayıt olun.",
@@ -49,5 +56,21 @@
     "registration_failure": "Kayıt başarısız!",
     "login_success": "Giriş başarılı!",
     "login_failure": "Giriş başarısız!"
+  },
+  "listComponent": {
+    "caller": "Çağıran Yapan",
+    "description": "Açıklama",
+    "time": "Zaman",
+    "audio": "Ses",
+    "details": "Detaylar",
+    "message": "Mesaj",
+    "health_info": "Sağlık Bilgileri",
+    "allergies": "Alerjiler",
+    "medications": "İlaçlar",
+    "chronic_illnesses": "Kronik Hastalıklar",
+    "none": "Yok",
+    "location": "Konum",
+    "image": "Resim",
+    "audio_error": "Tarayıcınız ses öğesini desteklemiyor."
   }
 }

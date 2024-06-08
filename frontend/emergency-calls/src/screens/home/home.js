@@ -8,7 +8,7 @@ import CallsMap from "../../components/callsMap";
 import { getRoleFromToken } from "../../utils/getRole";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
+import { LogoutOutlined } from "@ant-design/icons";
 function Home() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ function Home() {
               <div className="rectangleRight"></div>
             </div>
           </div>
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-5 right-4">
             <button className="mr-4" onClick={() => changeLanguage("en")}>
               English
             </button>
@@ -90,7 +90,7 @@ function Home() {
               Türkçe
             </button>
             <button onClick={handleLogout} className="logout-button">
-              {t("home.logout")}
+              <LogoutOutlined /> {t("home.logout")}
             </button>
           </div>
         </div>

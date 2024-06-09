@@ -14,6 +14,8 @@ async function AreYouSafe(req, res) {
 
 async function saveHealthInfo(req, res) {
   const { userId, healthInfo } = req.body;
+  console.log("userId:",userId);
+  console.log("Health:",healthInfo);
   try {
     // Find the user by ID and update their health information
     const updateUser = await User.findByIdAndUpdate(

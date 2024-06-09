@@ -40,7 +40,7 @@ const SaglikTakipEkrani = () => {
     try {
       // Make API call to save health information
       const response = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/user/health`,
+        `${process.env.EXPO_PUBLIC_API_URL}/api/user/health`,
         {
           userId: id.id,
           healthInfo: {

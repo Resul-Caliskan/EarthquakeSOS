@@ -2,6 +2,6 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 
-router.post("/user/statue", userController.AreYouSafe);
-router.post("/user/health", userController.saveHealthInfo);
+router.put("/user/statue", userController.AreYouSafe);
+router.put("/user/health", userController.saveHealthInfo);
 module.exports = router;

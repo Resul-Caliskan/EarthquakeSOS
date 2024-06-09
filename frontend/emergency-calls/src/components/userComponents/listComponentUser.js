@@ -19,10 +19,10 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import socket from "../config/socketConfig"; // Adjust the import according to your file structure
 import { withTranslation } from "react-i18next";
-import { getTeams, handleEmergency } from "../backend/teamApi";
+import { getTeams, handleEmergency } from "../../backend/teamApi";
 import { LoadingOutlined } from "@ant-design/icons";
+import { getTeamIdFromToken } from "../../utils/getTeam";
 
 const BASE_URL = "https://earthquakesos.onrender.com"; // Make sure this matches your backend URL
 
@@ -306,7 +306,7 @@ const TranslatedRow = withTranslation()(Row);
 function ListComponent({ t }) {
   const [rows, setRows] = useState([]);
   const [assignedTeams, setAssignedTeams] = useState([]);
-
+  const teamId = getTeamIdFromToken(localStorage.getItem("token"));
   useEffect(() => {
     let isMounted = true;
 
@@ -317,32 +317,34 @@ function ListComponent({ t }) {
         );
         if (isMounted) {
           const data = response.data.data;
-          console.log("Data:", data);
-          const formattedData = data.map((item) => {
-            if (item.recordUrl) {
-              item.audioUrl = item.recordUrl;
-            }
-            if (item.imageUrl) {
-              item.imageUrl = item.imageUrl;
-            }
-            const coordinates = item.coordinate[0]
-              .replace("[", "")
-              .replace("]", "")
-              .split(",")
-              .map((coord) => parseFloat(coord.trim()));
+          console.log("Data:", data[0]);
+          const formattedData = data
+            .filter((item) => item.team && item.team === teamId) // Filter by teamId
+            .map((item) => {
+              if (item.recordUrl) {
+                item.audioUrl = item.recordUrl;
+              }
+              if (item.imageUrl) {
+                item.imageUrl = item.imageUrl;
+              }
+              const coordinates = item.coordinate[0]
+                .replace("[", "")
+                .replace("]", "")
+                .split(",")
+                .map((coord) => parseFloat(coord.trim()));
 
-            return createData(
-              item._id,
-              item.name,
-              item.message,
-              item.createdAt,
-              item.recordUrl,
-              item.imageUrl,
-              item.healthInfo,
-              coordinates,
-              item.isRescuied
-            );
-          });
+              return createData(
+                item._id,
+                item.name,
+                item.message,
+                item.createdAt,
+                item.recordUrl,
+                item.imageUrl,
+                item.healthInfo,
+                coordinates,
+                item.isRescuied
+              );
+            });
           setRows(formattedData);
         }
       } catch (error) {
@@ -352,46 +354,8 @@ function ListComponent({ t }) {
 
     fetchData();
 
-    const handleEmergencyWeb = (data) => {
-      const coordinates = data.coordinate[0]
-        .replace("[", "")
-        .replace("]", "")
-        .split(",")
-        .map((coord) => parseFloat(coord.trim()));
-      console.log("Audio url", data.audioUrl);
-      const newEmergency = createData(
-        data.id,
-        data.name,
-        data.message,
-        data.time,
-        data.audioUrl,
-        data.imageUrl,
-        data.healthInfo,
-        coordinates,
-        data.isRescuied
-      );
-
-      if (isMounted) {
-        setRows((prevRows) => {
-          const index = prevRows.findIndex((row) => row.id === data.id);
-          if (index !== -1) {
-            // Update existing entry
-            const updatedRows = [...prevRows];
-            updatedRows[index] = newEmergency;
-            return updatedRows;
-          } else {
-            // Add new entry
-            return [newEmergency, ...prevRows];
-          }
-        });
-      }
-    };
-
-    socket.on("emergencyWeb", handleEmergencyWeb);
-
     return () => {
       isMounted = false;
-      socket.off("emergencyWeb", handleEmergencyWeb);
     };
   }, []);
 

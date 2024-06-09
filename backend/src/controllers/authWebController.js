@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
       fullName,
       phone,
       role: role,
-      team:null,
+      team: null,
       address,
     });
 
@@ -50,9 +50,13 @@ exports.login = async (req, res) => {
     }
 
     // JWT oluştur
-    const token = jwt.sign({ userId: user._id, role: user.role }, "şifre", {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role, team: user.team },
+      "şifre",
+      {
+        expiresIn: "1h",
+      }
+    );
 
     res.status(200).json({ token, role: user.role });
   } catch (error) {
@@ -64,10 +68,9 @@ exports.login = async (req, res) => {
 // controllers/userController.js
 exports.getUnassignedUsers = async (req, res) => {
   try {
-    const users = await User.find({ team: null, role: { $ne: 'admin' } });
+    const users = await User.find({ team: null, role: { $ne: "admin" } });
     res.status(200).json(users);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
-

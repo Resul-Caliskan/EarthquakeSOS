@@ -1,20 +1,33 @@
 import React, { useState, useEffect } from "react";
 import "./home.css";
 import "leaflet/dist/leaflet.css";
-import ListComponent from "../../components/listComponent";
 import socket from "../../config/socketConfig";
 import CallsMap from "../../components/callsMap";
 import { getRoleFromToken } from "../../utils/getRole";
 import { useNavigate } from "react-router-dom";
+import ListComponentUser from "../../components/userComponents/listComponentUser";
+import { useTranslation } from "react-i18next";
+import { LogoutOutlined } from "@ant-design/icons";
 
 function HomeUser() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [selectedOption, setSelectedOption] = useState("emergency");
   const [isLoading, setIsLoading] = useState(true); // State for loading status
   const token = localStorage.getItem("token");
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    document.cookie = `i18next=${lng}; path=/`;
+    document.title = "AFAD | ESOS";
   };
 
   useEffect(() => {
@@ -67,6 +80,17 @@ function HomeUser() {
               <div className="rectangleRight"></div>
             </div>
           </div>
+          <div className="absolute top-5 right-4">
+            <button className="mr-4" onClick={() => changeLanguage("en")}>
+              English
+            </button>
+            <button className="mr-4" onClick={() => changeLanguage("tr")}>
+              Türkçe
+            </button>
+            <button onClick={handleLogout} className="logout-button">
+              <LogoutOutlined /> {t("home.logout")}
+            </button>
+          </div>
         </div>
         <ul className="menu">
           <li
@@ -81,7 +105,7 @@ function HomeUser() {
               onClick={() => handleOptionClick("emergency")}
               className="menu-link"
             >
-              Acil Çağrı Bilgisi
+              {t("home.emergency_calls")}
             </a>
           </li>
           <li
@@ -96,13 +120,28 @@ function HomeUser() {
               className="menu-link"
               onClick={() => handleOptionClick("map")}
             >
-              Çağrı Konumu
+              {t("home.call_map")}
             </a>
           </li>
+          {/* <li
+            className={`menu-item ${
+              selectedOption === "team"
+                ? "border-b-2 border-b-black bg-gray-200"
+                : ""
+            }`}
+          >
+            <a
+              href="#"
+              className="menu-link"
+              onClick={() => handleOptionClick("team")}
+            >
+              {t("home.team_management")}
+            </a>
+          </li> */}
         </ul>
       </div>
       <div className="h-full p-2">
-        {selectedOption === "emergency" && <ListComponent />}
+        {selectedOption === "emergency" && <ListComponentUser />}
         {selectedOption === "map" && <CallsMap />}
       </div>
     </div>

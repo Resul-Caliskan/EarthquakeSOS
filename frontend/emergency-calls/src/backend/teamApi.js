@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-
-const API_URL = 'http://localhost:5000/api';
+//BAse URL değişecek
+const API_URL = "http://localhost:5000/api";
 
 export const getUnassignedUsers = async () => {
   try {
@@ -11,7 +11,11 @@ export const getUnassignedUsers = async () => {
     // toast.success('Gönüllüler Başarıyla Listelelendi');
     return response.data;
   } catch (error) {
-    toast.error(`Error fetching unassigned users: ${error.response?.data?.message || error.message}`);
+    toast.error(
+      `Gönüllülere Ulaşılamadı: ${
+        error.response?.data?.message || error.message
+      }`
+    );
     throw error;
   }
 };
@@ -22,7 +26,9 @@ export const getTeams = async () => {
     // toast.success('Takımlar Başarıyla Listelendi');
     return response.data;
   } catch (error) {
-    toast.error(`Error fetching teams: ${error.response?.data?.message || error.message}`);
+    toast.error(
+      `Takımlara Ulaşılamadı: ${error.response?.data?.message || error.message}`
+    );
     throw error;
   }
 };
@@ -30,21 +36,45 @@ export const getTeams = async () => {
 export const createTeam = async (teamName) => {
   try {
     const response = await axios.post(`${API_URL}/teams`, { name: teamName });
-    toast.success('Takım Başarıyla Oluşturuldu');
+    toast.success("Takım Başarıyla Oluşturuldu");
     return response.data;
   } catch (error) {
-    toast.error(`Error creating team: ${error.response?.data?.message || error.message}`);
+    toast.error(
+      `Takım Oluşturulamadı: ${error.response?.data?.message || error.message}`
+    );
     throw error;
   }
 };
 
 export const addUserToTeam = async (teamId, userId) => {
   try {
-    const response = await axios.post(`${API_URL}/teams/${teamId}/members/${userId}`);
-    toast.success('Gönüllü Takıma Başarıyla Eklendi');
+    const response = await axios.post(
+      `${API_URL}/teams/${teamId}/members/${userId}`
+    );
+    toast.success("Gönüllü Takıma Başarıyla Eklendi");
     return response.data;
   } catch (error) {
-    toast.error(`Gönüllü Ekleme Hatası: ${error.response?.data?.message || error.message}`);
+    toast.error(
+      `Gönüllü Ekleme Hatası: ${error.response?.data?.message || error.message}`
+    );
+    throw error;
+  }
+};
+
+export const handleEmergency = async (userId, teamId) => {
+  try {
+    const response = await axios.put(`${API_URL}/coordinate/handle-emergency`, {
+      userId,
+      teamId,
+    });
+    toast.success("Yardım Ekibi Gönderildi");
+    return response.data;
+  } catch (error) {
+    toast.error(
+      `Yardım Ekibi Gönderme hatası: ${
+        error.response?.data?.message || error.message
+      }`
+    );
     throw error;
   }
 };

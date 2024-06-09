@@ -12,6 +12,7 @@ const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 const teamRoutes = require("./src/routes/teamRoutes");
 const callRoutes = require("./src/routes/callRoutes");
+const UserRoutes = require("./src/routes/userRoutes");
 
 const app = express();
 
@@ -32,6 +33,7 @@ mongoose
 
 app.use("/api", CoordinateRoutes);
 app.use("/api", AuthRoutes);
+app.use("/api", UserRoutes);
 app.use("/api/web", AuthWebRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api", teamRoutes);

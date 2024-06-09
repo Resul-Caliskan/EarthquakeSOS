@@ -72,10 +72,11 @@
     "location": "Konum",
     "image": "Resim",
     "audio_error": "Tarayıcınız ses öğesini desteklemiyor.",
-    "teams":"Ekipler",
-    "select":"Ekip Seç",
-    "team-description":"Yardım Çağrısına ekip yönlendirmek için aşağıdan ekip seçiniz.",
-    "confirm":"Onayla"
+    "teams": "Ekipler",
+    "select": "Ekip Seç",
+    "team-description": "Yardım Çağrısına ekip yönlendirmek için aşağıdan ekip seçiniz.",
+    "confirm": "Onayla",
+    "team_confirmed": "Yardım Ekibi Gönderildi"
   },
   "teams": {
     "volunteer": "Gönüllüler",

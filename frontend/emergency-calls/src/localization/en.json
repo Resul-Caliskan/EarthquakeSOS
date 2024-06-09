@@ -75,7 +75,8 @@
     "teams": "Teams",
     "select": "Select Team",
     "team-description":"Select a team below to direct a team to the Call for Assistance.",
-    "confirm":"Confirm"
+    "confirm":"Confirm",
+    "team_confirmed":"Aid Team Sent"
   },
   "teams": {
     "volunteer": "Volunteers",

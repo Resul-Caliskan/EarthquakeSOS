@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
@@ -21,7 +21,7 @@ import L from "leaflet";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import socket from "../config/socketConfig"; // Adjust the import according to your file structure
 import { withTranslation } from "react-i18next";
-import { getTeams } from "../backend/teamApi";
+import { getTeams, handleEmergency } from "../backend/teamApi";
 import { LoadingOutlined } from "@ant-design/icons";
 
 const BASE_URL = "https://earthquakesos.onrender.com"; // Make sure this matches your backend URL
@@ -71,42 +71,50 @@ function createData(
 }
 
 function Row(props) {
-  const { row, t } = props;
+  const { row, t, assignedTeams, setAssignedTeams } = props;
   const [open, setOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [confirming, setConfirming] = useState(false);
+  const [isConfirmed, setConfirmed] = useState(false);
 
   const handleChangeTab = (event, newValue) => {
     setSelectedTab(newValue);
   };
 
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const teamsData = await getTeams();
-      setTeams(teamsData);
+      setTeams(teamsData.filter((team) => !assignedTeams.includes(team.name)));
+      console.log("takımlar", teams, assignedTeams);
     } catch (error) {
       console.error("Error fetching teams:", error);
     }
-  };
+  }, [assignedTeams]);
 
   useEffect(() => {
     if (open) {
       fetchTeams();
     }
-  }, [open]);
+  }, [open, fetchTeams]);
 
   const handleTeamSelect = (teamId) => {
     setSelectedTeam(teamId);
-    // Remove selected team from dropdown options
-    setTeams(teams.filter((team) => team.id !== teamId));
   };
 
-  const handleConfirm = () => {
-    // Perform action to confirm team assignment
+  const handleConfirm = async () => {
     setConfirming(true);
-    // Add your logic here to handle team assignment confirmation
+    try {
+      await handleEmergency(row.id, selectedTeam); // Assuming selectedUserId is the ID of the user you want to update
+      setAssignedTeams((prev) => [...prev, selectedTeam]);
+      toast.success("Team assignment and emergency update successful");
+    } catch (error) {
+      toast.error(`Error handling emergency: ${error.message}`);
+    } finally {
+      setConfirming(false);
+      setConfirmed(true);
+    }
   };
 
   useEffect(() => {
@@ -194,34 +202,43 @@ function Row(props) {
                       >
                         {t("listComponent.team-description")}{" "}
                       </Typography>{" "}
-                      <select
-                        className="bg-red-500 p-2 rounded-md mb-2 mr-2"
-                        value={selectedTeam}
-                        onChange={(e) => handleTeamSelect(e.target.value)}
-                      >
-                        {" "}
-                        <option value="">
-                          {t("listComponent.select")}
-                        </option>{" "}
-                        {teams.map((team) => (
-                          <option key={team.id} value={team.id}>
+                      {isConfirmed ? (
+                        <p style={{ color: "limegreen", fontSize: 16 }}>
+                          {t("listComponent.team_confirmed")}
+                        </p>
+                      ) : (
+                        <>
+                          {" "}
+                          <select
+                            className="bg-red-500 p-2 rounded-md mb-2 mr-2"
+                            value={selectedTeam}
+                            onChange={(e) => handleTeamSelect(e.target.value)}
+                          >
                             {" "}
-                            {team.name}{" "}
-                          </option>
-                        ))}{" "}
-                      </select>{" "}
-                      <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
-                        onClick={handleConfirm}
-                        disabled={!selectedTeam || confirming}
-                      >
-                        {" "}
-                        {confirming ? (
-                          <LoadingOutlined className="px-3" />
-                        ) : (
-                          t("listComponent.confirm")
-                        )}{" "}
-                      </button>{" "}
+                            <option value="">
+                              {t("listComponent.select")}
+                            </option>{" "}
+                            {teams.map((team) => (
+                              <option key={team._id} value={team._id}>
+                                {" "}
+                                {team.name}{" "}
+                              </option>
+                            ))}{" "}
+                          </select>{" "}
+                          <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md ml-2"
+                            onClick={handleConfirm}
+                            disabled={!selectedTeam || confirming}
+                          >
+                            {" "}
+                            {confirming ? (
+                              <LoadingOutlined className="px-3" />
+                            ) : (
+                              t("listComponent.confirm")
+                            )}{" "}
+                          </button>{" "}
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -282,12 +299,15 @@ Row.propTypes = {
     coordinate: PropTypes.arrayOf(PropTypes.number).isRequired,
   }).isRequired,
   t: PropTypes.func.isRequired,
+  assignedTeams: PropTypes.array.isRequired,
+  setAssignedTeams: PropTypes.func.isRequired,
 };
 
 const TranslatedRow = withTranslation()(Row);
 
 function ListComponent({ t }) {
   const [rows, setRows] = useState([]);
+  const [assignedTeams, setAssignedTeams] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -390,7 +410,13 @@ function ListComponent({ t }) {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <TranslatedRow key={row.id} row={row} t={t} />
+              <TranslatedRow
+                key={row.id}
+                row={row}
+                t={t}
+                assignedTeams={assignedTeams}
+                setAssignedTeams={setAssignedTeams}
+              />
             ))}
           </TableBody>
         </Table>

@@ -3,6 +3,7 @@ const {
   updateCoordinate,
   uploadMiddleware,
   getAllEmergency,
+  handleEmergency,
 } = require("../controllers/coordinateController");
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.put(
   updateCoordinate
 );
 router.get("/coordinate/emergency", getAllEmergency);
+router.put("/coordinate/handle-emergency", handleEmergency);
 
 module.exports = router;

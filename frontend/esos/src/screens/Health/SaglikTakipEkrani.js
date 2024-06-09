@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import { Colors } from "../../constants/colors";
 import { useRoute } from "@react-navigation/native";
 import axios from "axios";
+import { showToast } from "../../utils/toastMessage";
 const SaglikSchema = Yup.object().shape({
   kronikHastaliklar: Yup.string().required("Zorunlu"),
   alerjiler: Yup.string().required("Zorunlu"),
@@ -37,20 +38,22 @@ const SaglikTakipEkrani = () => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index)); // Use functional update and filter to remove the item at the specified index
   };
   const handleSubmit = async (values) => {
+    const healthInfo = {
+      kronikHastaliklar,
+      alerjiler,
+      ilaclar,
+    };
     try {
       // Make API call to save health information
-      const response = await axios.post(
+      const response = await axios.put(
         `${process.env.EXPO_PUBLIC_API_URL}/api/user/health`,
         {
           userId: id.id,
-          healthInfo: {
-            kronikHastaliklar: kronikHastaliklar,
-            alerjiler: alerjiler,
-            ilaclar: ilaclar,
-          },
+          healthInfo,
         }
       );
-
+      if (response.status === 200)
+        showToast("Sağlık Bilgileri Başarıyla Kaydedildi");
       console.log("API response:", response.data);
       // You can handle success message or any other action here
     } catch (error) {

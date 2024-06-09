@@ -111,7 +111,7 @@ export default function Home({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buton1}
-            onPress={() => navigation.navigate("health")}
+            onPress={() => navigation.navigate("health", { id })}
           >
             <Text style={styles.text}>Sağlık Bilgilerim</Text>
           </TouchableOpacity>

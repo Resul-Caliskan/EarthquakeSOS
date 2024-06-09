@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import notificationsConfig from "../../config/notificationsConfig";
 import { scheduleNotification } from "../../utilities/pushNotifications";
 import { useRoute } from "@react-navigation/native";
+import { showToast } from "../../utils/toastMessage";
 
 export default function Home({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -79,28 +80,36 @@ export default function Home({ navigation }) {
     setConfirmModalVisible(true);
   };
 
-  const handleConfirmation = (confirmed) => {
+  const handleConfirmation = async (confirmed) => {
     try {
       if (confirmed) {
         Alert.alert(
           "Acil Yardım butonu ile her zaman yardım çağırabilirsiniz!",
           "Lütfen En Yakın Toplanma Noktasına Gidin."
         );
-        const response = axios.put(
+        const response = await axios.put(
           `${process.env.EXPO_PUBLIC_API_URL}/api/user/statue`,
           { statue: true, id: id }
         );
+        if (response.status === 200) {
+          showToast("Durumunuz Başarıyla Güncellendi");
+        }
       } else {
         Alert.alert(
           "Endişelenmeyin, Yardım Talebiniz Alınmıştır",
           "Ekiplerimiz en kısa sürede size ulaşacaktır."
         );
-        const response = axios.put(
+        const response = await axios.put(
           `${process.env.EXPO_PUBLIC_API_URL}/api/user/statue`,
           { statue: false, id: id }
         );
+        if (response.status === 200) {
+          showToast("Durumunuz Başarıyla Güncellendi");
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
 
     setConfirmModalVisible(false);
   };

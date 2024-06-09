@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     ilaclar: [{ type: String }],
   },
   team: { type: mongoose.Schema.Types.ObjectId, ref: "Team" },
-  isRescued: { type: Boolean },
+  isRescuied: { type: Boolean },
   coordinate: [{ type: String }],
   statue: { type: Boolean },
   message: { type: String },

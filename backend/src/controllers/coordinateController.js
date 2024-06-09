@@ -1,5 +1,6 @@
 const config = require("../config/config");
 const User = require("../models/user");
+const Team = require("../models/Team");
 const { getSocketIo } = require("../config/notificationConfig");
 const multer = require("multer");
 const stream = require("stream");
@@ -186,7 +187,7 @@ async function handleEmergency(req, res) {
     // Update the user with the specified user ID
     const user = await User.findByIdAndUpdate(
       userId,
-      { $set: { team: teamId, statue: true, isRescued: false } },
+      { $set: { team: teamId, isRescued: false } },
       { new: true }
     );
 
@@ -195,7 +196,11 @@ async function handleEmergency(req, res) {
         message: "Kullanıcı bulunamadı",
       });
     }
-
+    const team = await Team.findByIdAndUpdate(
+      teamId,
+      { $set: { isOnTask: true } },
+      { new: true }
+    );
     res.status(200).json({
       message: "Acil durum güncellemesi başarıyla yapıldı",
       data: user,

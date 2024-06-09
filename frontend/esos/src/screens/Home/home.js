@@ -80,12 +80,28 @@ export default function Home({ navigation }) {
   };
 
   const handleConfirmation = (confirmed) => {
-    if (confirmed) {
-      Alert.alert(
-        "Güvende Olduğunuza Emin Misiniz?",
-        "Lütfen En Yakın Toplanma Noktasına Gidin."
-      );
-    }
+    try {
+      if (confirmed) {
+        Alert.alert(
+          "Acil Yardım butonu ile her zaman yardım çağırabilirsiniz!",
+          "Lütfen En Yakın Toplanma Noktasına Gidin."
+        );
+        const response = axios.put(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/user/statue`,
+          { statue: true, id: id }
+        );
+      } else {
+        Alert.alert(
+          "Endişelenmeyin, Yardım Talebiniz Alınmıştır",
+          "Ekiplerimiz en kısa sürede size ulaşacaktır."
+        );
+        const response = axios.put(
+          `${process.env.EXPO_PUBLIC_API_URL}/api/user/statue`,
+          { statue: false, id: id }
+        );
+      }
+    } catch (error) {}
+
     setConfirmModalVisible(false);
   };
   return (
@@ -105,9 +121,9 @@ export default function Home({ navigation }) {
         >
           <TouchableOpacity
             style={styles.buton1}
-            onPress={() => setModalVisible(true)}
+            onPress={() => setConfirmModalVisible(true)}
           >
-            <Text style={styles.text}>Yakınlarımın Durumu</Text>
+            <Text style={styles.text}>Güvende Misiniz?</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buton1}
@@ -162,7 +178,7 @@ export default function Home({ navigation }) {
           ))}
         </View>
       </Modal>
-      {/* <Modal
+      <Modal
         animationType="slide"
         transparent={true}
         visible={confirmModalVisible}
@@ -192,7 +208,7 @@ export default function Home({ navigation }) {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal> */}
+      </Modal>
     </View>
   );
 }

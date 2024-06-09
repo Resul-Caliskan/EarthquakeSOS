@@ -11,6 +11,7 @@ const AuthWebRoutes = require("./src/routes/authWebRoutes");
 const socketConfig = require("./src/config/notificationConfig");
 const notificationRoutes = require("./src/routes/notificationRoutes");
 const teamRoutes = require("./src/routes/teamRoutes");
+
 const callRoutes = require("./src/routes/callRoutes");
 const UserRoutes = require("./src/routes/userRoutes");
 

@@ -103,7 +103,7 @@ export default function Login() {
     }
 
     try {
-      const response = await axios.post(`http://localhost:5000/api/web/login`, {
+      const response = await axios.post(`https://earthquakesos.onrender.com/api/web/login`, {
         email,
         password,
       });
@@ -134,7 +134,7 @@ export default function Login() {
         }
       }, 1000);
     } catch (error) {
-      toast.error(error.response.data.message || t("messages.login_failure"), {
+      toast.error(t("messages.login_failure"), {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,

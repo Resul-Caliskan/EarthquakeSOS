@@ -132,6 +132,26 @@ async function updateCoordinate(req, res) {
     }
   }
 }
+async function updateCoordinateNotification(req, res) {
+  const { coordinate, date, message, id } = req.body;
+  console.log("Cordinate", coordinate);
+  try {
+    const updateCoordinateUser = await User.findByIdAndUpdate(id, {
+      coordinate: coordinate,
+      message: message,
+      currentDate: date,
+    });
+
+    res.status(200).json({
+      message: "Koordinat Başarılı Bir Şekilde Alındı",
+      data: updateCoordinateUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Koordinat Alınırken Bir Hata Oluştu Lütfen Tekrar Deneyiniz",
+    });
+  }
+}
 
 async function getAllEmergency(req, res) {
   try {
@@ -217,6 +237,7 @@ module.exports = {
   updateCoordinate,
   getAllEmergency,
   handleEmergency,
+  updateCoordinateNotification,
   uploadMiddleware: upload.fields([
     { name: "record", maxCount: 1 },
     { name: "image", maxCount: 1 },

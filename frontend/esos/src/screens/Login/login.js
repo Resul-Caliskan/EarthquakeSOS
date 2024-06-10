@@ -158,7 +158,7 @@ const LoginScreen = ({ navigation }) => {
                 alignItems: "center",
               }}
             >
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => {
                   handleForgotButton();
                 }}
@@ -171,7 +171,7 @@ const LoginScreen = ({ navigation }) => {
                 >
                   Şifremi Unuttum
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => {
                   handleRegisterButton();

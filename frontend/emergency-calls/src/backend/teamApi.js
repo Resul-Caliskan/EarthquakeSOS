@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 //BAse URL değişecek
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://earthquakesos.onrender.com/api";
 
 export const getUnassignedUsers = async () => {
   try {
